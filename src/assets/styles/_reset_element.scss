@@ -36,16 +36,7 @@
     }
 }
 
-
-
-
-
-
-
-
-
- 
-  .sidebar-container {
+.sidebar-container {
     transition: width .28s;
     width: 180px ;
     height: 100%;
@@ -57,14 +48,11 @@
     background: rgba(0,0,0,0.5)
   }
 
-
-
-  
-    .sidebar-container.navCollapsed {
+.sidebar-container.navCollapsed {
       width: 63px ;
     }
 
-    .navCollapsed{
+.navCollapsed{
          .el-submenu {
             &>.el-submenu__title {
                 &>span {
@@ -77,5 +65,9 @@
             }
   
     }
-   
 
+.el-pagination{
+  margin-top: 30px;
+  float: right;
+  right: 10px;
+}

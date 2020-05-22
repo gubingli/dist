@@ -10,7 +10,7 @@ import store from '@/store/index'
 import axios from '@/config/httpConfig'
 import '@/assets/styles/index.scss'
 
-require('./mock.js');
+// require('./mock.js');
 
 // 引入 ECharts 主模块
 import echarts from "echarts";
@@ -54,7 +54,7 @@ router.beforeEach((to, from, next) => {
                 next({ path: to.path })
             })
         } else {
-            if (to.path !== '/login') {
+            if (to.path !== '/login'||to.path !== '/registor') {
                 next()
             } else {
                 next(from.fullPath)

@@ -26,7 +26,7 @@
                 <template slot-scope="scope">
                     <el-button
                             size="mini"
-                            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                            @click="handleEchart(scope.$index, scope.row)">历史曲线</el-button>
                     <el-button
                             size="mini"
                             type="danger"
@@ -46,6 +46,8 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import { LIST } from '@/api'
     export default {
         data() {
             return {
@@ -54,33 +56,53 @@
                 pageCount:7,
                 currentPage:1,
 
-
-                tableData: [{
-                    id:'1',
-                    date: '2016-05-02',
-                    name: '王小虎',
-                    address: '上海市普陀区金沙江路 1518 弄'
-                }]
+                tableData: [
+//                    {
+//                    id:'1',
+//                    date: '2016-05-02',
+//                    name: '王小虎',
+//                    address: '上海市普陀区金沙江路 1518 弄'
+//                }
+                ]
             }
+        },
+        computed: {
+            ...mapState([
+                'Role',
+                'UserId'
+            ])
         },
         methods: {
             getData(){
-                this.$http.get("/member/list",{"page":this.currentPage})
+                LIST({"role":3,"page":this.currentPage})
                     .then(response => {
-                        this.total=response.totalNum;
-
+                        this.$message({
+                            message: "获取成功！",
+                            type: "success",
+                            offset:'100',
+                            center: true
+                        });
+                       console.log(response)
+//                        this.total=response.totalNum;
                         this.tableData=response.data;
                     })
-                    .catch(error => {});
+                    .catch(error => {
+                        console.log(error);
+                        this.$message({
+                            message: "获取失败！",
+                            type: "error",
+                            offset:'100',
+                            center: true
+                        });
+                    });
             },
 
-            handleEdit(index, row) {
+            handleEchart(index, row) {
                 console.log(index, row);
             },
             handleDetail(index, row) {
                 this.$router.push('detail/'+row.id);
             },
-
 
             handleCurrentChange(val) {
                 this.currentPage = val;

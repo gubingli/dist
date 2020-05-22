@@ -8,11 +8,11 @@
 
       <div class="form-model">
         <el-form :model="ruleForm"  :rules="rules" ref="ruleForm"  class="demo-ruleForm" label-position="top">
-          <el-form-item label="账号" prop="user">
-            <el-input v-model="ruleForm.user"></el-input>
+          <el-form-item label="手机号" prop="phone">
+            <el-input v-model="ruleForm.phone"></el-input>
           </el-form-item>
-          <el-form-item label="密码" prop="pass">
-            <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+          <el-form-item label="密码" prop="password">
+            <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="确认密码" prop="checkPass">
             <el-input type="password" v-model="ruleForm.checkPass" autocomplete="off" ></el-input>
@@ -28,8 +28,8 @@
           </el-form-item>
         </el-form>
         <div class="des-model">
-          <p>Don't have account?</p>
-          <p>SHOW UP NOW</p>
+          <p>Health Data Management Platform</p>
+          <p>健康数据管理平台</p>
         </div>
       </div>
     </div>
@@ -37,38 +37,46 @@
 </template>
 
 <script>
-    import {register} from '@/api'
+    import { REGISTER } from '@/api'
 export default {
   name: 'Login',
   data () {
-      var validatePass2 = (rule, value, callback) => {
+      var validatePhone=(rule,value,callback)=>{
+          if (value === '') {
+              callback(new Error('请输入手机号'));
+          } else if (!(/^1\d{10}$/.test(value))) {
+              callback(new Error('请输入正确的手机号!'));
+          } else {
+              callback();
+          }
+      };
+      var validatePass = (rule, value, callback) => {
           if (value === '') {
               callback(new Error('请再次输入密码'));
-          } else if (value !== this.ruleForm.pass) {
+          } else if (value !== this.ruleForm.password) {
               callback(new Error('两次输入密码不一致!'));
           } else {
               callback();
           }
-      }
+      };
     return {
         labelPos:'top',
         ruleForm: {
-            user: '',
-            pass: '',
+            phone: '',
+            password: '',
             checkPass:'',
             role:'1'
         },
         rules: {
-            user: [
-                {required: true, message: '请输入账号', trigger: 'blur'},
-                {min: 11, max: 11, message: '请输入正确账号', trigger: 'blur'}
+            phone: [
+                {validator: validatePhone, trigger: 'blur'}
             ],
-            pass: [
+            password: [
                 {required: true, message: '请输入密码', trigger: 'blur'},
                 {min: 6,  message: '最小长度6位', trigger: 'blur'}
             ],
             checkPass: [
-                { validator: validatePass2, trigger: 'blur' }
+                { validator: validatePass, trigger: 'blur' }
             ],
         }
     }
@@ -78,15 +86,16 @@ export default {
             let _that=this;
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    register({"name":this.ruleForm.name,"pass":this.ruleForm.pass})
+                    REGISTER({"account":this.ruleForm.phone,"password":this.ruleForm.password,"role":this.ruleForm.role})
                     .then(response => {
                             this.$message({
                                 message: "注册成功！",
                                 type: "success",
+                                offset:'100',
                                 center: true
                             });
                             let t=setTimeout(function(){
-                                _that.$router.push('login')
+                                _that.$router.push('login');
                                 clearTimeout(t);
                             },100)
                         })
@@ -95,6 +104,7 @@ export default {
                     this.$message({
                         message: "请输入正确的信息！",
                         type: 'error',
+                        offset:'100',
                         center: true
                     });
                     console.log('error submit!!');

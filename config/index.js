@@ -11,13 +11,13 @@ module.exports = {
     assetsSubDirectory: 'static',
     assetsPublicPath: '/',
     proxyTable: {
-        // '/api': {
-        //     target: 'http://doctorapi.local.com/',  //目标接口域名
-        //     changeOrigin: true,  //是否跨域
-        //     pathRewrite: {
-        //         '^/api': '/admin'   //重写接口 后台接口指向不统一  所以指向所有/
-        //     }
-        // },
+        '/admin': {
+            target: 'http://47.111.240.220:443',  //目标接口域名  http://47.111.240.220
+            changeOrigin: true,  //是否跨域
+            pathRewrite: {
+                '^/admin': '/admin'   //重写接口 后台接口指向不统一  所以指向所有/
+            }
+        },
         // cssSourceMap: false
     },
 
@@ -52,7 +52,7 @@ module.exports = {
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
     assetsSubDirectory: 'static',
-    assetsPublicPath: '/',
+    assetsPublicPath: './',
 
     /**
      * Source Maps

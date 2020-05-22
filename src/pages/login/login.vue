@@ -5,22 +5,26 @@
         <p>Login in</p>
         <p>Get access to your account</p>
       </div>
-
       <div class="form-model">
           <el-form :model="ruleForm"   :rules="rules" ref="ruleForm" class="demo-ruleForm" label-position="top" >
-            <el-form-item label="账号" prop="user" >
-              <el-input v-model="ruleForm.user"></el-input>
+            <el-form-item label="手机号" prop="phone" >
+              <el-input v-model="ruleForm.phone"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="pass">
-              <el-input type="password" v-model="ruleForm.pass" autocomplete="off"></el-input>
+            <el-form-item label="密码" prop="password">
+              <el-input type="password" v-model="ruleForm.password" autocomplete="off"></el-input>
+            </el-form-item>
+            <el-form-item label="您的身份" prop="checkPass">
+              <el-radio v-model="ruleForm.role" label="0">管理员</el-radio>
+              <el-radio v-model="ruleForm.role" label="1">机构</el-radio>
+              <el-radio v-model="ruleForm.role" label="2">医生</el-radio>
+              <el-radio v-model="ruleForm.role" label="3">普通会员</el-radio>
             </el-form-item>
             <el-form-item label="验证码" prop="identifyCode" >
               <el-input  v-model="ruleForm.identifyCode" autocomplete="off" style="width: 50%;" ></el-input>
-              <div class=""  @click="changeCode" style="position: absolute;left: 188px;display: inline-block;">
+              <div   @click="changeCode" style="position: absolute;left: 238px;display: inline-block;">
                 <Identify :identifyCode="identifyCode"></Identify>
               </div>
             </el-form-item>
-
             <p class="link-register" @click="linkToRegister">没有账号？请点击这里，进行注册</p>
             <el-form-item>
               <el-button type="primary" @click="submitForm('ruleForm')">LOGIN</el-button>
@@ -39,7 +43,7 @@
 
 <script>
   import Identify from '@/components/identify'
-  import {login} from '@/api'
+  import { LOGIN } from '@/api'
 export default {
   name: 'Login',
     components:{
@@ -50,6 +54,15 @@ export default {
     },
 
   data () {
+      var validatePhone=(rule,value,callback)=>{
+          if (value === '') {
+              callback(new Error('请输入手机号'));
+          } else if (!(/^1\d{10}$/.test(value))) {
+              callback(new Error('请输入正确的手机号!'));
+          } else {
+              callback();
+          }
+      };
       var validateIdentify = (rule, value, callback) => {
           console.log(value,this.identifyCode)
           if (value === '') {
@@ -64,18 +77,17 @@ export default {
         identifyCode:'',    //验证码的值
         identifyCodes:'1234567890' ,   //验证码的生成范围
 
-
         ruleForm: {
-            user: '',
-            pass: '',
+            phone: '',
+            password: '',
+            role:'0',
             identifyCode:''
         },
         rules: {
-            user: [
-                {required: true, message: '请输入账号', trigger: 'blur'},
-                {min: 11, max: 11, message: '请输入正确账号', trigger: 'blur'}
+            phone: [
+                {validator:validatePhone, trigger: 'blur'},
             ],
-            pass: [
+            password: [
                 {required: true, message: '请输入密码', trigger: 'blur'},
                 {min: 6,  message: '最小长度6位', trigger: 'blur'}
             ],
@@ -90,25 +102,34 @@ export default {
             let _that=this;
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-//                    this.$http.post("/login",{"name":this.ruleForm.name,"pass":this.ruleForm.pass})
-                    login({"name":this.ruleForm.name,"pass":this.ruleForm.pass})
+                    LOGIN({"account":this.ruleForm.phone,"password":this.ruleForm.password,"role":this.ruleForm.role})
                         .then(response => {
                             this.$message({
                                 message: "登录成功！",
                                 type: "success",
+                                offset:'100',
                                 center: true
                             });
-                            this.$store.commit('LOGIN_IN', response.token);
+                            this.$store.commit('LOGIN_IN', {"token":response.access_token,"role":response.role,'id':response.user_id});
                             let t=setTimeout(function(){
                                 _that.$router.push('home')
                                 clearTimeout(t);
                             },10)
                         })
-                        .catch(error => {});
+                        .catch(error => {
+                            console.log(error);
+                            this.$message({
+                                message: "操作失败！",
+                                type: "error",
+                                offset:'100',
+                                center: true
+                            });
+                        });
                 } else {
                     this.$message({
                         message: "请按照规则填写信息！",
                         type: 'error',
+                        offset:'100',
                         center: true
                     });
                     return false;
@@ -169,13 +190,13 @@ export default {
        }
        .form-model{
          width: 500px;
-         height: 380px;
+         height: 448px;
          background: #fff;
          padding: 20px;
          margin-top: 20px;
          position: relative;
          .el-form{
-           width: 300px;
+           width: 360px;
            height: 100%;
            position: relative;
          }

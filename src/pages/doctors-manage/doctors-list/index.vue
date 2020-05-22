@@ -9,23 +9,40 @@
                     width="180">
             </el-table-column>
             <el-table-column
-                    prop="name"
+                    prop="account"
                     label="姓名"
                     width="180">
             </el-table-column>
             <el-table-column
-                    prop="state"
+                    prop="status"
                     label="审核状态">
             </el-table-column>
             <el-table-column label="操作" width="180">
                 <template slot-scope="scope">
+                    <!--0审核失败 1审核中 2审核通过-->
                     <el-button
+                            v-if="scope.row.status==2&&this.Role==0"
+                            size="mini"
+                            @click="handleAuth(scope.$index, scope.row)">审核</el-button>
+                    <el-button
+                            v-if="(scope.row.status==2&&this.Role==3)||this.Role!=3"
                             size="mini"
                             @click="handleDetail(scope.$index, scope.row)">详情</el-button>
-                    <el-button
+                    <template v-if="scope.row.status==2&&this.Role==3">
+                        <el-button
                             size="mini"
                             type="danger"
                             @click="handleForbid(scope.$index, scope.row)">禁止</el-button>
+                        <el-button
+                            size="mini"
+                            type="danger"
+                            @click="handleForbid(scope.$index, scope.row)">一次查看</el-button>
+                        <el-button
+                            size="mini"
+                            type="danger"
+                            @click="handleForbid(scope.$index, scope.row)">永久查看</el-button>
+                    </template>
+
                 </template>
             </el-table-column>
         </el-table>
@@ -42,6 +59,8 @@
 </template>
 
 <script>
+    import { mapState } from 'vuex'
+    import { LIST } from '@/api'
     export default {
         data() {
             return {
@@ -51,30 +70,44 @@
                 currentPage:1,
 
 
-                tableData: [{
-                    id:'1',
-                    name: '王小虎',
-                    state:'已审核',//审核状态
-                },{
-                    id:'2',
-                    name: '王小虎',
-                    state:'未审核',//审核状态
-                },{
-                    id:'3',
-                    name: '王小虎',
-                    state:'待审核',//审核状态
-                }]
+                tableData: [
+//                    {
+//                    id:'1',
+//                    name: '王小虎',
+//                    state:'已审核',//审核状态
+//                }
+                ]
             }
+        },
+        computed: {
+            ...mapState([
+                'Role',
+                'UserId'
+            ])
         },
         methods: {
             getData(){
-                this.$http.get("/member/list",{"page":this.currentPage})
+                LIST({"role":2,"page":this.currentPage})
                     .then(response => {
-                        this.total=response.totalNum;
-
+                        this.$message({
+                            message: "获取成功！",
+                            type: "success",
+                            offset:'100',
+                            center: true
+                        });
+                        console.log(response)
+//                        this.total=response.totalNum;
                         this.tableData=response.data;
                     })
-                    .catch(error => {});
+                    .catch(error => {
+                        console.log(error);
+                        this.$message({
+                            message: "获取失败！",
+                            type: "error",
+                            offset:'100',
+                            center: true
+                        });
+                    });
             },
 
             handleForbid(index, row) {
@@ -91,7 +124,7 @@
             }
         },
         mounted(){
-            // this.getData();
+             this.getData();
         }
     }
 </script>

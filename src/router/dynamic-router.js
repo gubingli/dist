@@ -1,13 +1,9 @@
 
-/* 产品管理 */
-const Goods = () => import('@/pages/goods-manage')
-const GoodsList = () => import('@/pages/goods-manage/goods-list')
-const GoodsClassify = () => import('@/pages/goods-manage/goods-classify')
-const Order = () => import('@/pages/order-manage')
-const OrderList = () => import('@/pages/order-manage/order-list')
-const ProductManage = () => import('@/pages/order-manage/product-manage')
-const ProductList = () => import('@/pages/order-manage/product-manage/product-list')
-const ProductDetail = () => import('@/pages/order-manage/product-manage/product-detail')
+
+const Base = () => import('@/pages/base-manage')
+const BaseCom = () => import('@/pages/base-manage/base-com')
+const BaseDoctor = () => import('@/pages/base-manage/base-doctor')
+const BaseMember = () => import('@/pages/base-manage/base-member')
 
 const HealthData = () => import('@/pages/healthData-manage')
 const HealthDataAdd = () => import('@/pages/healthData-manage/healthData-add')
@@ -19,13 +15,58 @@ const HealthDataList = () => import('@/pages/healthData-manage/healthData-list')
 const Member = () => import('@/pages/member-manage')
 const MemberList = () => import('@/pages/member-manage/member-list')
 const MemberDetail = () => import('@/pages/member-manage/member-detail')
+
 const Doctors= () => import('@/pages/doctors-manage')
 const DoctorsList = () => import('@/pages/doctors-manage/doctors-list')
 const DoctorsDetail = () => import('@/pages/doctors-manage/doctors-detail')
 
+const Company= () => import('@/pages/company-manage')
+const CompanyList = () => import('@/pages/company-manage/company-list')
+const CompanyDetail = () => import('@/pages/company-manage/company-detail')
 
 /* 需要权限判断的路由 */
 export const   dynamicRouter = [
+    {
+        path: 'base',
+        component: Base,
+        name: 'base',
+        meta: {
+            name: '基本信息',
+            icon: 'icon-base'
+        },
+        children: [
+            {
+                path: 'com',
+                name: 'base-com',
+                component: BaseCom,
+                meta: {
+                    name: '机构信息',
+                    // icon: 'icon-member',
+                    slideName:'base-com',
+                }
+            },
+            {
+                path: 'doctor',
+                name: 'base-doctor',
+                component: BaseDoctor,
+                meta: {
+                    name: '医生信息',
+                    // icon: 'icon-member',
+                    slideName:'base-doctor',
+                }
+            },
+            {
+                path: 'member',
+                name: 'base-member',
+                component: BaseMember,
+                meta: {
+                    name: '会员信息',
+                    // icon: 'icon-member',
+                    slideName:'base-doctor',
+                }
+            }
+        ]
+    },
     {
         path: 'member',
         component: Member,
@@ -41,7 +82,7 @@ export const   dynamicRouter = [
                 component: MemberList,
                 meta: {
                     name: '会员管理',
-                    icon: 'icon-member',
+                    // icon: 'icon-member',
                     slideName:'member-list',
                 }
             },
@@ -50,9 +91,20 @@ export const   dynamicRouter = [
                 name: 'member-detail',
                 component: MemberDetail,
                 meta: {
-                    name: '会员详情',
-                    icon: 'icon-member',
+                    name: '会员信息',
+                    // icon: 'icon-member',
                     slideName:'member-list',
+                    slideHide:true,
+                }
+            },
+            {
+                path: '/healthData/echart/:id',
+                name: 'healthData-echart',
+                component: HealthDataEchart,
+                meta: {
+                    name: '健康数据曲线',
+                    // icon: 'icon-product-manage',
+                    slideName:'healthData-add',
                     slideHide:true,
                 }
             }
@@ -73,7 +125,7 @@ export const   dynamicRouter = [
                 component: DoctorsList,
                 meta: {
                     name: '医生列表',
-                    icon: 'icon-doctor',
+                    // icon: 'icon-doctor',
                     slideName:'doctors-list',
                 }
             },
@@ -82,9 +134,73 @@ export const   dynamicRouter = [
                 name: 'doctors-detail',
                 component: DoctorsDetail,
                 meta: {
-                    name: '医生详情',
-                    icon: 'icon-doctor',
+                    name: '医生信息',
+                    // icon: 'icon-doctor',
                     slideName:'doctors-list',
+                    slideHide:true,
+                }
+            }
+        ]
+    },
+    {
+        path: 'doctorsCol',
+        component: Doctors,
+        name: 'doctorsCol',
+        meta: {
+            name: '我收藏的医生',
+            icon: 'icon-doctor'
+        },
+        children: [
+            {
+                path: 'list',
+                name: 'doctorsCol-list',
+                component: DoctorsList,
+                meta: {
+                    name: '医生列表',
+                    // icon: 'icon-doctor',
+                    slideName:'doctors-list',
+                }
+            },
+            {
+                path: 'detail/:id',
+                name: 'doctorsCol-detail',
+                component: DoctorsDetail,
+                meta: {
+                    name: '医生信息',
+                    // icon: 'icon-doctor',
+                    slideName:'doctorsCol-list',
+                    slideHide:true,
+                }
+            }
+        ]
+    },
+    {
+        path: 'company',
+        component: Company,
+        name: 'company',
+        meta: {
+            name: '机构管理',
+            icon: 'icon-company'
+        },
+        children: [
+            {
+                path: 'list',
+                name: 'company-list',
+                component: CompanyList,
+                meta: {
+                    name: '机构列表',
+                    // icon: 'icon-company',
+                    slideName:'company-list',
+                }
+            },
+            {
+                path: 'detail/:id',
+                name: 'company-detail',
+                component: CompanyDetail,
+                meta: {
+                    name: '机构详情',
+                    // icon: 'icon-company',
+                    slideName:'company-list',
                     slideHide:true,
                 }
             }
@@ -105,7 +221,7 @@ export const   dynamicRouter = [
                 component: HealthDataAdd,
                 meta: {
                     name: '今日数据',
-                    icon: 'icon-data-manage',
+                    // icon: 'icon-data-manage',
                     slideName:'healthData-add',
                 }
             },
@@ -114,136 +230,14 @@ export const   dynamicRouter = [
                 name: 'healthData-echart',
                 component: HealthDataEchart,
                 meta: {
-                    name: '历史曲线',
-                    icon: 'icon-product-manage',
+                    name: '健康数据曲线',
+                    // icon: 'icon-product-manage',
                     slideName:'healthData-add',
                     slideHide:true,
                 }
-            },
-            {
-                path: 'list',
-                name: 'healthData-list',
-                component: HealthDataList,
-                meta: {
-                    name: '历史数据',
-                    icon: 'icon-home',
-                    slideName:'healthData-add',
-                    slideHide:true,
-                }
-            },
+            }
 
         ]
     },
-
-    // {
-    //     path: '',
-    //     component: Goods,
-    //     name: 'goods',
-    //     meta: {
-    //         name: '商城管理',
-    //         icon: 'icon-order-manage'
-    //     },
-    //     children: [
-    //         {
-    //             path: 'goods/list',
-    //             name: 'goods-list',
-    //             component: GoodsList,
-    //             meta: {
-    //                 name: '商品管理',
-    //                 icon: 'icon-home',
-    //                 slideName:'goods-list',
-    //             }
-    //         },
-    //         {
-    //             path: 'datail',
-    //             name: 'goods-datail',
-    //             component: GoodsClassify,
-    //             meta: {
-    //                 name: '商品详情',
-    //                 icon: 'icon-product-manage',
-    //                 slideName:'goods-list',
-    //                 slideHide:true,
-    //             }
-    //         }
-    //     ]
-    // },
-    // {
-    //     path: '/order',
-    //     component: Order,
-    //     name: 'order-manage',
-    //     meta: {
-    //         name: '订单管理',
-    //         icon: 'icon-email',
-    //     },
-    //     children: [
-    //         {
-    //             path: 'list',
-    //             name: 'order-list',
-    //             component: OrderList,
-    //             meta: {
-    //                 name: '订单列表',
-    //                 icon: 'icon-quit'
-    //             }
-    //         },
-    //         {
-    //             path: 'product',
-    //             name: 'product-manage',
-    //             component: ProductManage,
-    //             meta: {
-    //                 name: '生产管理',
-    //                 icon: 'icon-service'
-    //             },
-    //             // children: [
-    //             //     {
-    //             //         path: 'list',
-    //             //         name: 'product-list',
-    //             //         component: ProductList,
-    //             //         meta: {
-    //             //             name: '生产列表',
-    //             //             icon: 'icon-nav',
-    //             //         }
-    //             //     },
-    //             //     {
-    //             //         path: 'detail',
-    //             //         name: 'product-detail',
-    //             //         component: ProductDetail,
-    //             //         meta: {
-    //             //             name: '生产详情',
-    //             //             icon: 'icon-finance-manage',
-    //             //             slideHide:true,
-    //             //         }
-    //             //     }
-    //             // ]
-    //         },
-    //         {
-    //             path: 'list',
-    //             name: 'product-list',
-    //             component: ProductList,
-    //             meta: {
-    //                 name: '生产列表',
-    //                 icon: 'icon-nav',
-    //             }
-    //         },
-    //         {
-    //             path: 'detail',
-    //             name: 'product-detail',
-    //             component: ProductDetail,
-    //             meta: {
-    //                 name: '生产详情',
-    //                 icon: 'icon-finance-manage',
-    //                 slideHide:true,
-    //             }
-    //         }
-    //         // {
-    //         //     path: 'returnGoods',
-    //         //     name: 'return-goods',
-    //         //     component: ReturnGoods,
-    //         //     meta: {
-    //         //         name: '退货管理',
-    //         //         icon: 'icon-product-manage'
-    //         //     }
-    //         // }
-    //     ]
-    // },
 ]
 

@@ -1,4 +1,4 @@
-import { fetchPermission } from '@/api/permission'
+import { fetchPermission} from '@/api/permission'
 import router, { DynamicRoutes } from '@/router/index'
 import { recursionRouter, setDefaultRoute } from '@/utils/recursion-router'
 import {dynamicRouter} from '@/router/dynamic-router'
@@ -36,15 +36,14 @@ export default {
     },
     actions: {
         async FETCH_PERMISSION({ commit, state }) {
+
             let permissionList = await fetchPermission();//请求接口获取动态权限
 
             /*  根据权限筛选出我们设置好的路由并加入到path=''的children中 */
-            let routes = recursionRouter(permissionList, dynamicRouter)//过滤后的路由 请求接口获取动态权限 和 本地动态路由过滤后的路由
-            let MainContainer = DynamicRoutes.find(v => v.path === '')
-            let children = MainContainer.children
-            children.push(...routes)
-
-            console.log(children)
+            let routes = recursionRouter(permissionList, dynamicRouter);//过滤后的路由 请求接口获取动态权限 和 本地动态路由过滤后的路由
+            let MainContainer = DynamicRoutes.find(v => v.path === '');
+            let children = MainContainer.children;
+            children.push(...routes);
 
 
             /* 生成左侧导航菜单 */
@@ -63,11 +62,11 @@ export default {
 
 
             /*  初始路由 */
-            let initialRoutes = router.options.routes
+            let initialRoutes = router.options.routes;
 
 
             /*  动态添加路由 */
-            router.addRoutes(DynamicRoutes)
+            router.addRoutes(DynamicRoutes);
 
             /* 完整的路由表 */
             commit('SET_PERMISSION', [...initialRoutes, ...DynamicRoutes])
