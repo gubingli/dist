@@ -13,3 +13,5 @@ export const DETAIL = params => { return http.post(`admin/detail?user_id=`+param
 export const LIST = params => { return http.get(`admin/list?role=${params.role}&page=${params.page}`,  {} ) };
 //审核
 export const CHECK = params => { return http.post(`admin/check`,  {"data":params} ) };
+//上传文件
+export const UPLOAD = params => { return http.post(`admin/upload`,  params ) };

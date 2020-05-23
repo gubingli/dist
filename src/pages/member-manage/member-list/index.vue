@@ -5,22 +5,21 @@
                 style="width: 100%">
             <el-table-column
                     prop="id"
-                    label="id"
-                    width="180">
+                    label="id">
             </el-table-column>
             <el-table-column
-                    prop="date"
-                    label="日期"
-                    width="180">
+                    prop="account"
+                    label="账号"
+                    min-width="180">
             </el-table-column>
             <el-table-column
-                    prop="name"
-                    label="姓名"
-                    width="180">
+                    prop="true_name"
+                    label="姓名">
             </el-table-column>
             <el-table-column
-                    prop="address"
-                    label="地址">
+                    prop="created_at"
+                    label="注册日期"
+                    min-width="180">
             </el-table-column>
             <el-table-column label="操作" width="180">
                 <template slot-scope="scope">
@@ -83,7 +82,7 @@
                             center: true
                         });
                        console.log(response)
-//                        this.total=response.totalNum;
+                        this.total=response.total;
                         this.tableData=response.data;
                     })
                     .catch(error => {

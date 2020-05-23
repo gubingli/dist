@@ -155,7 +155,7 @@
                             offset:'100',
                             center: true
                         });
-                        this.ruleForm=response;
+                        this.ruleForm=response?response:{};
                     })
                     .catch(error => {
                         console.log(error);

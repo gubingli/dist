@@ -16,18 +16,18 @@ Router.prototype.push = function push (to) {
 
 export default new Router({
     mode:'history',
-  routes: [
-    {
-      path: '/login',
-      name: 'Login',
-      component: Login
-    },
+    routes: [
+      {
+        path: '/login',
+        name: 'Login',
+        component: Login
+      },
       {
           path: '/register',
           name: 'Register',
           component: Register
       }
-  ]
+    ]
 })
 
 /* 准备动态添加的路由 */

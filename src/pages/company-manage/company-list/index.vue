@@ -6,17 +6,17 @@
             <el-table-column
                     prop="cid"
                     label="id"
-                    width="180">
+                    >
             </el-table-column>
             <el-table-column
                     prop="account"
                     label="账号"
-                    width="180">
+                    min-width="180">
             </el-table-column>
             <el-table-column
                     prop="company_name"
                     label="机构名称"
-                    width="180">
+                    min-width="180">
             </el-table-column>
             <el-table-column
                     label="审核状态">
@@ -114,7 +114,7 @@
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    this.subAuth(2)
+                    this.subAuth(row.id,2)
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -130,7 +130,7 @@
                     inputErrorMessage: '请输入拒绝原因'
                 }).then(({ value }) => {
                     console.log(value)
-                    this.subAuth(0,value)
+                    this.subAuth(row.id,0,value)
                 }).catch(() => {
                     this.$message({
                         type: 'info',
@@ -138,8 +138,8 @@
                     });
                 });
             },
-            subAuth(status,reson){
-                CHECK({user_id:this.$store.state.UserId,audit_status:status,reason:reson})
+            subAuth(user_id,status,reson){
+                CHECK({user_id:user_id,audit_status:status,reason:reson})
                     .then(response => {
                         this.$message({
                             message: "操作成功！",

@@ -39,7 +39,12 @@ Vue.prototype.$dispatch = function (componentName,eventName) {
 Vue.config.productionTip = false;
 Vue.use(ElementUI)
 router.beforeEach((to, from, next) => {
+        // console.log(store.state.UserToken)
+        // console.log(to.matched)
     if (!store.state.UserToken) {//未登录
+        console.log(111)
+        console.log(to.matched)
+        console.log(to.matched.some(record => record.meta.requiresAuth))
         if (
             to.matched.length > 0 &&
             !to.matched.some(record => record.meta.requiresAuth)
@@ -48,6 +53,7 @@ router.beforeEach((to, from, next) => {
         } else {
             next({ path: '/login' })
         }
+
     } else { //已登录
         if (!store.state.permission.permissionList) {//没有 所有路由 则获取 所有路由
             store.dispatch('permission/FETCH_PERMISSION').then(() => {

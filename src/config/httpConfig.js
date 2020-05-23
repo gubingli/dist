@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store/index.js'
-import {baseUrl} from './baseUrl'
+import {baseUrl} from '@/config/baseUrl'
 import { Message } from 'element-ui'
 const http = {}
 
@@ -13,9 +13,15 @@ var instance = axios.create({
 instance.interceptors.request.use(
     function(config) {
         // 请求头添加token
-        // if (store.state.UserToken) {
-        //     config.headers.Authorization = store.state.UserToken
-        // }
+        if (store.state.UserToken) {
+            config.headers.Authorization = store.state.UserToken
+        }
+        if(config.url.indexOf('admin/upload')>-1){
+            config.headers['mimeType']= 'multipart/form-data';
+            config.headers['Content-Type']= 'application/x-www-form-urlencoded;charset=utf-8 ';
+            config.headers['processData']= false;
+            config.headers['contentType']= false;
+        }
         return config
     },
     function(error) {
@@ -87,6 +93,8 @@ http.get = function(url, options,type) {
 }
 
 http.post = function(url, data, options) {
+    console.log('data')
+    console.log(data)
     return new Promise((resolve, reject) => {
         instance
             .post(url, data, options)

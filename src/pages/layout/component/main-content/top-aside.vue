@@ -59,12 +59,17 @@ export default {
             this.$store.commit('toggleNavCollapse')
         },
         loginOut() {
+            let _that=this;
             this.$store.commit('LOGIN_OUT');
-            this.$store.commit('permission/CLEAR_PERMISSION');
-            this.$store.commit('permission/CLEAR_MENU');
-            this.$store.commit('permission/SET_CURRENT_MENU','');
+//            this.$store.commit('permission/CLEAR_PERMISSION');
+//            this.$store.commit('permission/CLEAR_MENU');
+//            this.$store.commit('permission/SET_CURRENT_MENU','');
             /* 防止切换角色时addRoutes重复添加路由导致出现警告 */
             window.location.reload(true);
+            let t=setTimeout(function(){
+                _that.$router.push('/login');
+                clearTimeout(t);
+            },10);
         }
     }
 }
