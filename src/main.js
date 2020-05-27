@@ -12,6 +12,15 @@ import '@/assets/styles/index.scss'
 
 // require('./mock.js');
 
+//图片放大
+import Viewer from 'v-viewer'
+import 'viewerjs/dist/viewer.css'
+
+Vue.use(Viewer);
+Viewer.setDefaults({
+    Options: { "inline": true, "button": true, "navbar": true, "title": true, "toolbar": true, "tooltip": true, "movable": true, "zoomable": true, "rotatable": true, "scalable": true, "transition": true, "fullscreen": true, "keyboard": true, "url": "data-source" }
+});
+
 // 引入 ECharts 主模块
 import echarts from "echarts";
 Vue.prototype.$echarts = echarts

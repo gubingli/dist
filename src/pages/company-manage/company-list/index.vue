@@ -5,8 +5,7 @@
                 style="width: 100%">
             <el-table-column
                     prop="cid"
-                    label="id"
-                    >
+                    label="id">
             </el-table-column>
             <el-table-column
                     prop="account"
@@ -147,7 +146,10 @@
                             offset:'100',
                             center: true
                         });
-
+                        let t=setTimeout(()=>{
+                            clearTimeout(t);
+                            this.getData();
+                        },1000)
                     })
                     .catch(error => {
                         console.log(error);

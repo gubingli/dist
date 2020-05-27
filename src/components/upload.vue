@@ -1,185 +1,91 @@
 <template>
-    <el-form-item class="upload-bg register-bg" label="上传广告图：" prop="ad_url">
-        <div class="hide-video-box"></div>
-        <el-upload
-                class="avatar-uploader"
-                ref="upload"
-                :action="upload_url"
-                list-type="picture-card"
-                :name="upload_name"
-                :on-remove="handleRemove"
-                :on-exceed="handleExceed"
-                :file-list="ad_url_list"
-                :limit="1"
-                :http-request="uploadSectionFile">
-            <span class="font-14">选择图片或视频</span>
-            <div slot="tip" class="el-upload__tip">尺寸750*1125px，大小2M以内，视频支持MP4</div>
-        </el-upload>
-        <div class="bg-box">广告背景图预览</div>
-    </el-form-item>
+    <el-upload
+            ref="upload"
+            action="string"
+            accept="type"
+            :list-type="listType"
+            :before-upload="onBeforeUploadImage"
+            :on-change="fileChange"
+            :http-request="UploadImage"
+            :file-list="fileList"
+            :on-remove="handleRemove">
+        <el-button size="small" type="primary">点击上传</el-button>
+        <div slot="tip" class="el-upload__tip">只能上传{{this.type}}文件，且不超过{{this.size}}kb</div>
+    </el-upload>
 </template>
 <script>
-    export default {
-        name: "upload",
-        data: function(){
+    import { UPLOAD } from '@/api'
+    export default{
+        name:'myUpload',
+        data(){
             return {
-                upload_url: '',//上传URL
-                upload_name: '',//图片或视频名称
-                ad_url: '',//上传后的图片或视频URL
-                ad_url_list: [],//预览列表
+
             }
         },
-        methods: {
-            handleExceed: function () {
-                _.$alert('请先删除选择的图片或视频，再上传', '提示', {
-                    type: 'warning'
-                });
+        props: {
+            listType:{
+                type:String,
+                default:''
             },
-            handleRemove: function (res, file) {
-                var self = this;
-                self.ad_url = '';
-                var liItem = document.getElementsByClassName('hide-video-box')[0];
-                liItem.innerHTML = '';
+            type: {
+                type: String,
+                default: "image/jpeg,image/png,image/jpg",
             },
-            uploadSectionFile: function (params) {
-                var self = this,
-                    file = params.file,
-                    fileType = file.type,
-                    isImage = fileType.indexOf('image') != -1,
-                    isVideo = fileType.indexOf('video') != -1,
-                    file_url = self.$refs.upload.uploadFiles[0].url;
-
-                var isLt2M = file.size / 1024 / 1024 < 2;
-                if (!isLt2M) {
-                    _.$alert('上传图片或视频大小不能超过 2MB!', '提示', { type: 'error' });
-                    self.$refs.upload.uploadFiles = [];
-                    return;
-                }
-
-                if(!isImage && !isVideo){
-                    _.$alert('请选择图片或视频!', '提示', { type: 'error' });
-                    self.$refs.upload.uploadFiles = [];
-                    return;
-                }
-
-                if (isImage) {
-                    var img = new Image();
-                    img.src = file_url;
-                    img.onload = function () {
-                        if (img.width !== 750 || img.height != 1125) {
-                            _.$alert('图片尺寸为750*1125px', '提示', { type: 'error' });
-                            //将上传列表清空
-                            self.$refs.upload.uploadFiles = [];
-                            return;
-                        }
-                        //图片上传
-                        self.upload_url = '你的图片上传URL';
-                        self.upload_name = 'file_img[]';
-                        self.uploadFile(file, isVideo, '');
-                    }
-                } else if (isVideo) {
-                    var isMP4 = file.type === 'video/mp4';
-                    if (!isMP4) {
-                        _.$alert('上传视频只支持 mp4 格式!', '提示', { type: 'error' });
-                        self.$refs.upload.uploadFiles = [];
-                        return;
-                    }
-                    var videoDiv = document.createElement('video');
-                    var liItem = document.getElementsByClassName('hide-video-box')[0];
-                    videoDiv.src = file_url;
-                    liItem.appendChild(videoDiv);
-
-                    videoDiv.onloadeddata = function (event) {
-                        var target = event.target;
-                        var width = target.offsetWidth;
-                        var height = target.offsetHeight;
-
-                        if (width !== 750 || height != 1125) {
-                            _.$alert('视频尺寸为750*1125px', '提示', { type: 'error' });
-                            //将上传列表清空
-                            self.$refs.upload.uploadFiles = [];
-                            return;
-                        }
-
-                        //视频上传
-                        self.upload_url = '你的视频上传URL';
-                        self.upload_name = 'file_video[]';
-                        self.uploadFile(file, isVideo, videoDiv);
-                    }
-                }
+            size: {
+                type: Number,
+                default: 1*1024
             },
-            uploadFile: function (file, isVideo, videoDiv) {
-                var self = this,
-                    formData = new FormData();
-                formData.append(self.upload_name, file);
+            fileList:{
+                type: Array,
+                default:[],
+            },
+            options: {}
+        },
+        methods:{
+            onBeforeUploadImage(file) {
+                let type_arr=this.type.split(",");
+                const isType = (type_arr.indexOf(file.type)>-1)?true:false;
+                const isSize = (file.size / (this.size*1024))<1?true:false;
 
-                axios.post(self.upload_url, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-                    .then(function (res) {
-                        if (res.result === '0000') {
-                            self.ad_url = res.data[0];
-                            //创建一个显示video的容器
-                            if (isVideo) {
-                                var liItem = document.getElementsByClassName('el-upload-list__item')[0];
-                                videoDiv.style.width = '278px';
-                                videoDiv.style.height = '415px';
-                                liItem.prepend(videoDiv);
-                            }
-                            return;
-                        }
-                        _.$alert('上传失败，请重新上传', '提示', { type: 'error' });
-                        self.$refs.upload.uploadFiles = [];
-                    })
-                    .catch(function (err) {
-                        console.error(err);
+                if (!isType||!isSize) {
+                    this.$message.error((!isType?'上传文件只能是'+this.type+'格式!':'')+(!isSize?'上传文件大小不能超过 '+this.size+'KB!':''))
+                }
+                return isType && isSize
+            },
+            UploadImage(param){
+                let formData = new FormData()
+                formData.append('file', param.file)
+                UPLOAD(formData).then(response => {
+                    console.log('上传图片成功')
+                    this.onSuccess(response);
+                    param.onSuccess(response)  // 上传成功的图片会显示绿色的对勾
+                    // 但是我们上传成功了图片， fileList 里面的值却没有改变，还好有on-change指令可以使用
+                }).catch(response => {
+                    this.$message({
+                        message: "图片上传失败！",
+                        type: "error",
+                        offset:'100',
+                        center: true
                     });
+                    console.log('图片上传失败')
+                    param.onError();
+                })
+            },
+            fileChange(file){
+                this.$refs.upload.clearFiles() //清除文件对象
+                this.logo = file.raw // 取出上传文件的对象，在其它地方也可以使用
+                this.$emit('setFileList', [{name: file.name, url: file.url}]);
+//                this.fileList.push({name: file.name, url: file.url});
+//                this.fileList = [{name: file.name, url: file.url}] // 重新手动赋值filstList， 免得自定义上传成功了, 而fileList并没有动态改变， 这样每次都是上传一个对象
+            },
+
+            onSuccess(file){
+                this.$emit('uploaded', file.url);
+            },
+            handleRemove() {
+                this.$emit('uploaded', '');
+                this.$emit('setFileList', []);
             }
         }
     }
 </script>
-<style lang="scss">
-    .upload-bg {
-        margin-bottom: 290px;
-        &.register-bg{
-            .el-upload-list--picture-card .el-upload-list__item{
-                width: 280px;
-                height: 417px;
-            }
-            .bg-box{
-                width: 278px;
-                height: 415px;
-                line-height: 417px;
-            }
-        }
-        .avatar-uploader {
-            position: relative;
-            z-index: 999;
-        }
-        .el-upload-list--picture-card{
-            position: absolute;
-            top: 0;
-            left: 420px;
-        }
-        .bg-box{
-            position: absolute;
-            left: 420px;
-            top: 0;
-            z-index: 998;
-            margin-bottom: 20px;
-            border: 1px solid #c0ccda;
-            border-radius: 5px;
-            text-align: center;
-            color: #bbb;
-            font-size: 13px;
-        }
-        .el-upload--picture-card{
-            height: 40px;
-            line-height: 40px;
-            span { color: #1AB394; }
-        }
-    }
-    .hide-video-box {
-        visibility: hidden;
-        position: absolute;
-        z-index: -999;
-    }
-</style>

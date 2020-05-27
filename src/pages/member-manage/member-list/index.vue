@@ -73,7 +73,7 @@
         },
         methods: {
             getData(){
-                LIST({"role":3,"page":this.currentPage})
+                LIST({"role":3,"user_id":this.UserId,"page":this.currentPage})
                     .then(response => {
                         this.$message({
                             message: "获取成功！",

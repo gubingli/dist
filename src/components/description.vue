@@ -4,7 +4,7 @@
         <el-row :gutter="gutter">
             <el-col :key="key" :span="+col" v-for="(item, key) in dataSource">
                 <div class="term">{{item.term}}</div>
-                <div class="detail">{{item.detail}}</div>
+                <div  class="detail">{{item.detail}}</div>
             </el-col>
         </el-row>
     </div>
