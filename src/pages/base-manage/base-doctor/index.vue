@@ -1,35 +1,16 @@
 <template>
-   <!---->
-    <!--`di_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,-->
-    <!--`user_id` bigint(20) unsigned NOT NULL COMMENT '用户id',-->
-    <!--`true_name` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户姓名',-->
-    <!--`phone` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '手机号码',-->
-    <!--`description` text COLLATE utf8mb4_unicode_ci COMMENT '个人简介',-->
-    <!--`pics` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '职业证书图片',-->
-    <!--`nation` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '民族',-->
-    <!--`avatar` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '头像',-->
-    <!--`birthday_at` datetime DEFAULT NULL COMMENT '出生年月',-->
-    <!--`card_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '身份证号码',-->
-    <!--`address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '地址',-->
-    <!--`company_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '公司id',-->
-    <!--`position` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '职位',-->
-    <!--`department` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '部门',-->
-    <!--`email` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '邮箱',-->
-    <!--`qq` varchar(16) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'qq号码',-->
-    <!--`wechat` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '微信号码',-->
-    <!--`audit_status` tinyint(4) NOT NULL DEFAULT '2' COMMENT '审核状态 0审核失败 1审核中 2审核通过',-->
-    <!--`reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '审核通过不通过的理由',-->
-    <!--`pass_at` datetime DEFAULT NULL COMMENT '审核通过时间',-->
-    <!--`created_at` timestamp NULL DEFAULT NULL,-->
-    <!--`updated_at` timestamp NULL DEFAULT NULL,-->
-    <!--PRIMARY KEY (`di_id`),-->
-    <!--UNIQUE KEY `doctor_infos_user_id_unique` (`user_id`)-->
-    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px"  class="demo-ruleForm" style="width: 50%;min-width:300px;">
+    <el-form :model="ruleForm" :rules="rules" ref="ruleForm" :disabled="(this.ruleForm.audit_status==1?true:false)" label-width="100px"  class="demo-ruleForm" style="width: 50%;min-width:300px;">
         <el-form-item label="真实姓名" prop="true_name">
             <el-input v-model="ruleForm.true_name"></el-input>
         </el-form-item>
-        <el-form-item label="所在公司" prop="company_id">
-            <el-input v-model="ruleForm.company_id"></el-input>
+        <el-form-item label="职业证书" prop="pics">
+            <my-upload @uploaded="uploadedPics" @setFileList="setFileListPics" listType="picture" :size="1024" :fileList="fileList_pics"></my-upload>
+        </el-form-item>
+        <el-form-item label="照片" prop="avatar">
+            <my-upload @uploaded="uploadedAvatar" @setFileList="setFileListAvatar" listType="picture" :size="1024" :fileList="fileList_avatar"></my-upload>
+        </el-form-item>
+        <el-form-item label="所在公司" prop="company_name">
+            <el-input v-model="ruleForm.company_name"></el-input>
         </el-form-item>
         <el-form-item label="所在部门" prop="department">
             <el-input v-model="ruleForm.department"></el-input>
@@ -41,7 +22,7 @@
             <el-input v-model="ruleForm.card_no"></el-input>
         </el-form-item>
         <el-form-item label="出生年月" prop="birthday_at">
-            <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.birthday_at" ></el-date-picker>
+            <el-date-picker type="date"  placeholder="选择日期" v-model="ruleForm.birthday_at" value-format="yyyy-MM-dd"></el-date-picker>
         </el-form-item>
         <el-form-item label="民族" prop="nation">
             <el-input v-model="ruleForm.nation"></el-input>
@@ -62,14 +43,20 @@
             <el-input type="textarea" v-model="ruleForm.description"></el-input>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">提交审核</el-button>
-            <el-button @click="resetForm('ruleForm')">重置</el-button>
+            <el-button v-if="this.ruleForm.audit_status=='1'" type="primary">审核中</el-button>
+            <el-button v-if="this.ruleForm.audit_status!='1'" type="primary" @click="submitForm('ruleForm')">提交审核</el-button>
+            <el-button  v-if="this.ruleForm.audit_status!='1'"  @click="resetForm('ruleForm')">重置</el-button>
+            <div class="el-form-item__error">
+                {{this.ruleForm.audit_status==0?'审核失败'+(this.ruleForm.reason?('，拒绝原因：'+this.ruleForm.reason):''):(this.ruleForm.audit_status==1?'待审核':this.ruleForm.audit_status==2?'审核成功':'未提交审核')}}
+            </div>
         </el-form-item>
     </el-form>
 </template>
 
 <script>
     import { DETAIL,UPDATE } from '@/api'
+    import { mapState } from 'vuex'
+    import  myUpload  from '@/components/upload'
     export default {
         data() {
             var validateCardNo=(rule,value,callback)=>{
@@ -84,8 +71,9 @@
             return {
                 ruleForm: {
                     true_name: '',
-                    company_id: '',
+                    company_name: '',
                     department: '',
+                    position:'',
                     nation:'',
                     card_no:'',
                     birthday_at:'',
@@ -93,24 +81,59 @@
                     email:'',
                     wechat:'',
                     qq:'',
-                    description:''
+                    description:'',
+                    pics:'',
+                    avatar:''
                 },
+                fileList_avatar:[],
+                fileList_pics:[],
                 rules: {
                     true_name: [
                         { required: true, message: '请输入姓名', trigger: 'blur' }
                     ],
                     card_no: [
-                        { validator: validateCardNo, trigger: 'blur' }
+                        { required: true,validator: validateCardNo, trigger: 'blur' }
                     ],
+                    avatar:[
+                        { required: true, message: '请上传照片' }
+                    ],
+                    pics:[
+                        { required: true, message: '请上传职业证书' }
+                    ]
                 }
             };
+        },
+        computed: {
+            ...mapState([
+                'Role',
+                'UserId'
+            ])
+        },
+        components:{
+            myUpload
         },
         methods: {
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        this.ruleForm.user_id=this.$store.state.UserId;
-                        UPDATE(this.ruleForm)
+                        let sub_obj={
+                            "true_name": this.ruleForm.true_name,
+                            "company_name": this.ruleForm.company_name,
+                            'department': this.ruleForm.department,
+                            'position':this.ruleForm.position,
+                            'nation':this.ruleForm.nation,
+                            'card_no':this.ruleForm.card_no,
+                            'birthday_at':this.ruleForm.birthday_at,
+                            'phone':this.ruleForm.phone,
+                            'email':this.ruleForm.email,
+                            'wechat':this.ruleForm.wechat,
+                            'qq':this.ruleForm.qq,
+                            'description':this.ruleForm.description,
+                            'pics':this.ruleForm.pics,
+                            'avatar':this.ruleForm.avatar,
+                            'user_id':this.UserId
+                        };
+                        UPDATE(sub_obj)
                             .then(response => {
                                 this.$message({
                                     message: "提交成功！",
@@ -118,10 +141,10 @@
                                     offset:'100',
                                     center: true
                                 });
-//                                let t=setTimeout(function(){
-//                                    this.getData();
-//                                    clearTimeout(t);
-//                                },10)
+                                let t=setTimeout(()=>{
+                                    this.getData();
+                                    clearTimeout(t);
+                                },10)
                             })
                             .catch(error => {
                                 console.log(error);
@@ -156,6 +179,12 @@
                             center: true
                         });
                         this.ruleForm=response?response:{};
+                        if(response&&response.pic_name&&response.url_a){
+                            this.fileList_pics=[{name:response.pic_name,url:response.url_a}]
+                        }
+                        if(response&&response.avatar_name&&response.avatar_url_a){
+                            this.fileList_avatar=[{name:response.avatar_name,url:response.avatar_url_a}]
+                        }
                     })
                     .catch(error => {
                         console.log(error);
@@ -166,7 +195,22 @@
                             center: true
                         });
                     });
-            }
+            },
+
+            //上传图片
+            uploadedPics (value){
+                this.ruleForm.pics=value;
+            },
+            setFileListPics(value){
+                this.fileList_pics=value;
+            },
+            uploadedAvatar (value){
+                this.ruleForm.avatar=value;
+            },
+            setFileListAvatar(value){
+                this.fileList_avatar=value;
+            },
+
         },
         created(){
 

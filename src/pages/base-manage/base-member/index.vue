@@ -8,8 +8,8 @@
             <el-input v-model="ruleForm.true_name"></el-input>
         </el-form-item>
         <el-form-item label="性别" prop="gender">
-            <el-radio v-model="ruleForm.gender" label="1">男</el-radio>
-            <el-radio v-model="ruleForm.gender" label="2">女</el-radio>
+            <el-radio v-model="ruleForm.gender" label=1>男</el-radio>
+            <el-radio v-model="ruleForm.gender" label=2>女</el-radio>
         </el-form-item>
         <el-form-item label="民族" prop="nation">
             <el-input v-model="ruleForm.nation"></el-input>
@@ -18,7 +18,7 @@
             <el-input v-model="ruleForm.card_no"></el-input>
         </el-form-item>
         <el-form-item label="出生年月" prop="birthday_at">
-            <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.birthday_at" ></el-date-picker>
+            <el-date-picker type="date" placeholder="选择日期" v-model="ruleForm.birthday_at" value-format="yyyy-MM-dd"></el-date-picker>
         </el-form-item>
         <el-form-item label="住址" prop="address">
             <el-input v-model="ruleForm.address"></el-input>
@@ -39,8 +39,10 @@
             <el-input type="textarea" v-model="ruleForm.description"></el-input>
         </el-form-item>
         <el-form-item>
-            <el-button type="primary" @click="submitForm('ruleForm')">提交</el-button>
-            <el-button @click="resetForm('ruleForm')">重置</el-button>
+
+            <el-button type="primary" @click="submitForm('ruleForm')">提交数据</el-button>
+            <el-button  @click="resetForm('ruleForm')">重置</el-button>
+
         </el-form-item>
     </el-form>
 </template>
@@ -61,7 +63,7 @@
             return {
                 ruleForm: {
                     true_name: '',
-                    gender:'1',
+                    gender:2,
                     nation:'',
                     card_no:'',
                     birthday_at:'',
@@ -76,9 +78,13 @@
                     true_name: [
                         { required: true, message: '请输入姓名', trigger: 'blur' }
                     ],
-                    card_no: [
-                        { validator: validateCardNo, trigger: 'blur' }
+                    gender:[
+                        { required: true, message: '请选性别' }
                     ],
+                    card_no: [
+                        { required: true,validator: validateCardNo, trigger: 'blur' }
+                    ],
+
                 }
             };
         },
@@ -96,10 +102,6 @@
                                     offset:'100',
                                     center: true
                                 });
-//                                let t=setTimeout(function(){
-//
-//                                    clearTimeout(t);
-//                                },10)
                             })
                             .catch(error => {
                                 console.log(error);
@@ -133,7 +135,11 @@
                             offset:'100',
                             center: true
                         });
-                        this.ruleForm=response?response:{};
+                        if(response){
+                            this.ruleForm=response?response:{};
+                            this.ruleForm.gender=response.gender.toString();
+                        }
+
                     })
                     .catch(error => {
                         console.log(error);

@@ -10,7 +10,7 @@ export const UPDATE = params => { return http.post(`admin/update`,   {"data":par
 //拉取详情
 export const DETAIL = params => { return http.post(`admin/detail?user_id=`+params,  {}) };
 //拉取列表 会员、医生、机构
-export const LIST = params => { return http.get(`admin/list?role=${params.role}&page=${params.page}`,  {} ) };
+export const LIST = params => { return http.get(`admin/list`,  {'params':params} ) };
 //审核
 export const CHECK = params => { return http.post(`admin/check`,  {"data":params} ) };
 //上传文件
