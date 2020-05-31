@@ -15,3 +15,5 @@ export const LIST = params => { return http.get(`admin/list`,  {'params':params}
 export const CHECK = params => { return http.post(`admin/check`,  {"data":params} ) };
 //上传文件
 export const UPLOAD = params => { return http.post(`admin/upload`,  params ) };
+//添加健康数据
+export const ADDDATA = params => { return http.post(`admin/xueya/addData`,  params) };
