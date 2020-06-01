@@ -29,7 +29,7 @@
                                     v-for="item in buwei_types"
                                     :key="item.value"
                                     :label="item.label"
-                                    :value="item.buwei_type">
+                                    :value="item.value">
                             </el-option>
                         </el-select>
                     </el-form-item>
