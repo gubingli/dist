@@ -24,12 +24,13 @@
                         <el-input v-model="ruleForm.tizhong"></el-input>
                     </el-form-item>
                     <el-form-item label="部位" prop="buwei_type" size="small" >
+
                         <el-select v-model="ruleForm.buwei_type" placeholder="请选择">
                             <el-option
                                     v-for="item in buwei_types"
                                     :key="item.value"
                                     :label="item.label"
-                                    :value="item.buwei_type">
+                                    :value="item.value">
                             </el-option>
                         </el-select>
                     </el-form-item>
