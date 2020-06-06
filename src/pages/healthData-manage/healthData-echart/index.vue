@@ -1,10 +1,10 @@
 <template>
     <div>
-        <div>
-            <el-button @click="changeModule(1)">血压折线图</el-button>
-            <el-button @click="changeModule(2)">血糖折线图</el-button>
-            <el-button @click="changeModule(3)">血脂折线图</el-button>
-        </div>
+<!--        <div>-->
+<!--            <el-button @click="changeModule(1)">血压折线图</el-button>-->
+<!--            <el-button @click="changeModule(2)">血糖折线图</el-button>-->
+<!--            <el-button @click="changeModule(3)">血脂折线图</el-button>-->
+<!--        </div>-->
         <div class="healData-model" >
             <div class="healData-box blood_pressure" v-if="showModule==1">
                 <div>
@@ -23,12 +23,12 @@
                     ></Echart>
                 </div>
             </div>
-            <div class="healData-box blood_sugar" v-if="showModule==2">
-                <h5>今日血糖</h5>
-            </div>
-            <div class="healData-box blood_lipids" v-if="showModule==3">
-                <h5>今日血脂</h5>
-            </div>
+<!--            <div class="healData-box blood_sugar" v-if="showModule==2">-->
+<!--                <h5>今日血糖</h5>-->
+<!--            </div>-->
+<!--            <div class="healData-box blood_lipids" v-if="showModule==3">-->
+<!--                <h5>今日血脂</h5>-->
+<!--            </div>-->
         </div>
     </div>
 
@@ -36,6 +36,8 @@
 
 <script>
     import Echart from '@/components/echart'
+    import { mapState } from 'vuex'
+    import { GETDATA_BP } from '@/api'
     export default {
         data() {
             return {
@@ -50,74 +52,119 @@
                 }],
                 preSelValue: '1',
 
-
-                preOptions:{
+                preOptions: {
                     title: {
-                        text: '血压折线图'
+                        text: '血压曲线图'
                     },
                     tooltip: {
                         trigger: 'axis'
                     },
-                    legend: {
-                        data: ['邮件营销', '联盟广告', '视频广告', '直接访问', '搜索引擎']
+                    xAxis: {
+                        data: [],
                     },
-                    grid: {
-                        left: '3%',
-                        right: '4%',
-                        bottom: '3%',
-                        containLabel: true
+                    yAxis: {
+                        splitLine: {
+                            show: false
+                        }
                     },
                     toolbox: {
+                        left: 'center',
                         feature: {
+                            dataZoom: {
+                                yAxisIndex: 'none'
+                            },
+                            restore: {},
                             saveAsImage: {}
                         }
                     },
-                    xAxis: {
-                        type: 'category',
-                        boundaryGap: false,
-                        data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
-                    },
-                    yAxis: {
-                        type: 'value'
-                    },
-                    series: [
-                        {
-                            name: '邮件营销',
-                            type: 'line',
-                            stack: '总量',
-                            data: [120, 132, 101, 134, 90, 230, 210]
-                        },
-                        {
-                            name: '联盟广告',
-                            type: 'line',
-                            stack: '总量',
-                            data: [220, 182, 191, 234, 290, 330, 310]
-                        },
-                        {
-                            name: '视频广告',
-                            type: 'line',
-                            stack: '总量',
-                            data: [150, 232, 201, 154, 190, 330, 410]
-                        },
-                        {
-                            name: '直接访问',
-                            type: 'line',
-                            stack: '总量',
-                            data: [320, 332, 301, 334, 390, 330, 320]
-                        },
-                        {
-                            name: '搜索引擎',
-                            type: 'line',
-                            stack: '总量',
-                            data: [820, 932, 901, 934, 1290, 1330, 1320]
+                    dataZoom: [{
+                        startValue: '2014-06-01'
+                    }, {
+                        type: 'inside'
+                    }],
+                    visualMap: {
+                        top: 10,
+                        right: 10,
+                        pieces: [{
+                            gt: 0,
+                            lte: 50,
+                            color: '#096'
+                        }, {
+                            gt: 50,
+                            lte: 100,
+                            color: '#ffde33'
+                        }, {
+                            gt: 100,
+                            lte: 150,
+                            color: '#ff9933'
+                        }, {
+                            gt: 150,
+                            lte: 200,
+                            color: '#cc0033'
+                        }, {
+                            gt: 200,
+                            lte: 300,
+                            color: '#660099'
+                        }, {
+                            gt: 300,
+                            color: '#7e0023'
+                        }],
+                        outOfRange: {
+                            color: '#999'
                         }
-                    ]
+                    },
+                    series: {
+                        name: '血压曲线图',
+                        type: 'line',
+                        data: [],
+                        markLine: {
+                            silent: true,
+                            data: [{
+                                yAxis: 50
+                            }, {
+                                yAxis: 100
+                            }, {
+                                yAxis: 150
+                            }, {
+                                yAxis: 200
+                            }, {
+                                yAxis: 300
+                            }]
+                        }
+                    }
                 },
                 echartWidth:'80%',
                 echartHeight:'400px',
             }
         },
+        computed: {
+            ...mapState([
+                'Role',
+                'UserId'
+            ])
+        },
         methods: {
+            getData(){
+                GETDATA_BP({'user_id':1})
+                    .then(response => {
+                        this.preOptions.dataZoom=[{
+                            startValue: response.measure_at[0]
+                        }, {
+                            type: 'inside'
+                        }],
+                        this.preOptions.xAxis.data=response.measure_at;
+                        this.series.xAxis.data=response.shuzhangya;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        this.$message({
+                            message: "获取数据失败！",
+                            type: "error",
+                            offset:'100',
+                            center: true
+                        });
+                    });
+            },
             changeModule(type){
                 this.showModule=type;
                 console.log(type)
@@ -174,6 +221,9 @@
         },
         created(){
             console.log(this.$route.params.id)
+        },
+        mounted(){
+            this.getData();
         }
     }
 </script>

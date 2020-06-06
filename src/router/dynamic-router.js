@@ -102,7 +102,7 @@ export const   dynamicRouter = [
                 name: 'healthData-echart',
                 component: HealthDataEchart,
                 meta: {
-                    name: '健康数据曲线',
+                    name: '健康曲线',
                     // icon: 'icon-product-manage',
                     slideName:'healthData-add',
                     slideHide:true,
@@ -230,10 +230,10 @@ export const   dynamicRouter = [
                 name: 'healthData-echart',
                 component: HealthDataEchart,
                 meta: {
-                    name: '健康数据曲线',
+                    name: '健康曲线',
                     // icon: 'icon-product-manage',
                     slideName:'healthData-add',
-                    slideHide:true,
+                    // slideHide:true,
                 }
             }
 
