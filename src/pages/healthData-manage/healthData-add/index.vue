@@ -37,11 +37,11 @@
                     <el-form-item label="操作人" prop="operator" size="small" >
                         <el-input v-model="ruleForm.operator"></el-input>
                     </el-form-item>
-                    <el-form-item label="测量时间" prop="measure_at" size="small" value-format="yyyy-MM-dd hh:mm" >
+                    <el-form-item label="测量时间" prop="measure_at" size="small"  >
                         <el-date-picker
                                 v-model="ruleForm.measure_at"
                                 type="datetime"
-                                placeholder="选择日期时间">
+                                placeholder="选择日期时间" value-format="yyyy-MM-dd hh:mm:ss">
                         </el-date-picker>
                     </el-form-item>
                     <el-form-item label="机器型号" prop="yiqi_model" size="small" >
@@ -170,7 +170,21 @@
                                 });
                                 let t=setTimeout(()=>{
                                     clearTimeout(t);
-                                    this.getData();
+                                    this.ruleForm= {
+                                        shuzhangya: '',
+                                            shousuoya:'',
+                                            xinlv:'',
+                                            tizhong:'',
+                                            buwei_type:'',
+                                            measure_at:'',
+                                            operator:'',
+                                            yiqi_model:'',
+                                            description:'',
+                                            user_id:'',
+                                    };
+                                     this.pills=[
+                                        {'pills_name':'','pills_num':0}
+                                    ];
                                 },1000)
                             })
                             .catch(error => {

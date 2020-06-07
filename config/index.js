@@ -12,7 +12,7 @@ module.exports = {
     assetsPublicPath: '/',
     proxyTable: {
         '/admin': {
-            target: 'http://47.111.240.220:8000',  //目标接口域名  http://47.111.240.220
+            target: 'http://api.ankangyidao.com',  //目标接口域名  http://47.111.240.220
             changeOrigin: true,  //是否跨域
             pathRewrite: {
                 '^/admin': '/admin'   //重写接口 后台接口指向不统一  所以指向所有/

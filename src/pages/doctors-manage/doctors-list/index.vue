@@ -44,17 +44,25 @@
                             @click="handleDetail(scope.$index, scope.row)">详情</el-button>
                     <template v-if="scope.row.audit_status==2&&Role==3">
                         <el-button
+                            v-if="scope.row.is_impower==1"
                             size="mini"
                             type="danger"
                             @click="handleForbid(scope.$index, scope.row)">禁止</el-button>
                         <el-button
+                                v-if="scope.row.is_impower==0"
                             size="mini"
                             type="danger"
-                            @click="handleForbid(scope.$index, scope.row)">一次查看</el-button>
+                            @click="handleImpower(1,scope.$index, scope.row)">一次查看</el-button>
                         <el-button
+                                v-if="scope.row.is_impower==0"
                             size="mini"
                             type="danger"
-                            @click="handleForbid(scope.$index, scope.row)">永久查看</el-button>
+                            @click="handleImpower(0,scope.$index, scope.row)">永久查看</el-button>
+                        <el-button
+                                v-if="scope.row.is_message==1"
+                                size="mini"
+                                type="primary"
+                                @click="handleMessage(scope.$index, scope.row)">查看留言</el-button>
                     </template>
 
                 </template>
@@ -74,7 +82,7 @@
 
 <script>
     import { mapState } from 'vuex'
-    import { LIST,CHECK } from '@/api'
+    import { LIST,CHECK,IMPOWER } from '@/api'
     export default {
         data() {
             return {
@@ -83,13 +91,7 @@
                 pageCount:7,
                 currentPage:1,
 
-                tableData: [
-//                    {
-//                    id:'1',
-//                    name: '王小虎',
-//                    state:'已审核',//审核状态
-//                }
-                ]
+                tableData: []
             }
         },
         computed: {
@@ -100,7 +102,15 @@
         },
         methods: {
             getData(){
-                LIST({"role":2,"page":this.currentPage})
+                let param={
+                    "role":2,"page":this.currentPage
+                }
+                if(this.Role==3){
+                    param.huiyuan=1 ;
+                    param.user_id=this.UserId;
+                    param.read_role=2;
+                };
+                LIST(param)
                     .then(response => {
                         this.$message({
                             message: "获取成功！",
@@ -108,8 +118,7 @@
                             offset:'100',
                             center: true
                         });
-                        console.log(response)
-//                        this.total=response.totalNum;
+                        this.total=response.total;
                         this.tableData=response.data;
                     })
                     .catch(error => {
@@ -123,20 +132,90 @@
                     });
             },
 
-            handleForbid(index, row) {
-                console.log(index, row);
+            //可查看数据
+            handleImpower(num,index, row){
+                let text=(num==0?'永久查看':'一次性查看');
+                this.$confirm('确认该医生可'+text+'你的数据？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.subImpower(row,num)
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                });
             },
-            handleDetail(index, row) {
-                this.$router.push('detail/'+row.id);
+            subImpower(row,num){//user_id  d_user_id im_status  1 number 0
+                let param={
+                    data:{user_id:Number(this.UserId),d_user_id:row.id,im_status:1,number:num}
+                };
+                IMPOWER(param)
+                    .then(response => {
+                        this.$message({
+                            message: "操作成功！",
+                            type: "success",
+                            offset:'100',
+                            center: true
+                        });
+                        let t=setTimeout(()=>{
+                            clearTimeout(t);
+                            this.getData();
+                        },1000)
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        this.$message({
+                            message: "操作失败！",
+                            type: "error",
+                            offset:'100',
+                            center: true
+                        });
+                    });
+            },
+            handleForbid(row) {
+                this.$confirm('确认禁止该医生查看你的数据？', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.forbidImpower(row)
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消操作'
+                    });
+                });
+            },
+            forbidImpower(row){
+                IMPOWER({ data:{user_id:row.user_id,d_user_id:row.id,im_status:0}})
+                    .then(response => {
+                        this.$message({
+                            message: "操作成功！",
+                            type: "success",
+                            offset:'100',
+                            center: true
+                        });
+                        let t=setTimeout(()=>{
+                            clearTimeout(t);
+                            this.getData();
+                        },1000)
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        this.$message({
+                            message: "操作失败！",
+                            type: "error",
+                            offset:'100',
+                            center: true
+                        });
+                    });
             },
 
 
-            handleCurrentChange(val) {
-                this.currentPage = val;
-                this.getData();
-            },
-
-
+            //审核
             handleAuth(index, row){
                 this.$confirm('确认通过审核？', '提示', {
                     confirmButtonText: '确定',
@@ -190,6 +269,22 @@
                             center: true
                         });
                     });
+            },
+
+            //查看留言
+            handleMessage(){
+                this.$router.push('message/'+row.id);
+            },
+
+
+            //详情
+            handleDetail(index, row) {
+                this.$router.push('detail/'+row.id);
+            },
+            //分页
+            handleCurrentChange(val) {
+                this.currentPage = val;
+                this.getData();
             },
         },
         mounted(){

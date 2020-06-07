@@ -19,6 +19,7 @@ const MemberDetail = () => import('@/pages/member-manage/member-detail')
 const Doctors= () => import('@/pages/doctors-manage')
 const DoctorsList = () => import('@/pages/doctors-manage/doctors-list')
 const DoctorsDetail = () => import('@/pages/doctors-manage/doctors-detail')
+const DoctorsMessage = () => import('@/pages/doctors-manage/doctors-message')
 
 const Company= () => import('@/pages/company-manage')
 const CompanyList = () => import('@/pages/company-manage/company-list')
@@ -98,7 +99,7 @@ export const   dynamicRouter = [
                 }
             },
             {
-                path: '/healthData/echart/:id',
+                path: '/healthData/echart',
                 name: 'healthData-echart',
                 component: HealthDataEchart,
                 meta: {
@@ -139,6 +140,17 @@ export const   dynamicRouter = [
                     slideName:'doctors-list',
                     slideHide:true,
                 }
+            },
+            {
+                path: 'message/:id',
+                name: 'doctors-message',
+                component: DoctorsMessage,
+                meta: {
+                    name: '留言详情',
+                    // icon: 'icon-doctor',
+                    slideName:'doctors-list',
+                    slideHide:true,
+                }
             }
         ]
     },
@@ -147,7 +159,7 @@ export const   dynamicRouter = [
         component: Doctors,
         name: 'doctorsCol',
         meta: {
-            name: '我收藏的医生',
+            name: '我授权的医生',
             icon: 'icon-doctor'
         },
         children: [
@@ -226,7 +238,7 @@ export const   dynamicRouter = [
                 }
             },
             {
-                path: 'echart/:id',
+                path: 'echart',
                 name: 'healthData-echart',
                 component: HealthDataEchart,
                 meta: {
