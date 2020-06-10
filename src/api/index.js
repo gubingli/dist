@@ -17,6 +17,7 @@ export const CHECK = params => { return http.post(`admin/check`,  {"data":params
 export const UPLOAD = params => { return http.post(`admin/upload`,  params ) };
 //添加健康数据
 export const ADDDATA = params => { return http.post(`admin/xueya/addData`,  params) };
+export const ADDDATA_XT = params => { return http.post(`admin/xuetang/addData`,  params) };
 //健康曲线
 export const GETDATA_BP = params => { return http.get(`admin/xueya`,  {'params':params}) };
 

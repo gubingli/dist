@@ -7,7 +7,7 @@
                 <li class="time">{{item.created_at}}</li>
                 <li class="home-mes"  v-if="item.true_name">
                     <div class="mes-name">
-                        <img src="@/assets/img/1-1.jpg" alt="">
+<!--                        <img src="@/assets/img/1-1.jpg" alt="">-->
                         <h5 >{{item.true_name}}</h5>
                     </div>
                     <p class="mes-detail">{{item.description}}</p>
@@ -15,7 +15,7 @@
                 <li class="other-mes"  v-if="item.d_true_name">
                     <p class="mes-detail">{{item.description}}</p>
                     <div class="mes-name">
-                        <img src="@/assets/img/1-1 (4).jpg" alt="">
+<!--                        <img src="@/assets/img/1-1 (4).jpg" alt="">-->
                         <h5 >{{item.d_true_name}}</h5>
                     </div>
                 </li>

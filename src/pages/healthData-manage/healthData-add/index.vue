@@ -1,12 +1,11 @@
 <template>
     <div class="healData-add" style="min-width: 700px;">
-<!--        <div class="btn-model">-->
-<!--            <el-button @click="changeModule(1)">今日血压</el-button>-->
-<!--            <el-button @click="changeModule(2)">今日血糖</el-button>-->
-<!--            <el-button @click="changeModule(3)">今日血脂</el-button>-->
-<!--            <el-button @click="changeModule(4)">今日体温</el-button>-->
-<!--            <el-button type="primary" @click="linkToEchart">历史曲线</el-button>-->
-<!--        </div>-->
+        <ul class="tab-model">
+            <li :class="{'active-tab':showModule==1}" @click="changeModule(1)">今日血压</li>
+            <li :class="{'active-tab':showModule==2}" @click="changeModule(2)">今日血糖</li>
+            <li :class="{'active-tab':showModule==3}" @click="changeModule(3)">今日血脂</li>
+            <li :class="{'active-tab':showModule==4}" @click="changeModule(4)">今日体温</li>
+        </ul>
         <div class="healData-model" >
             <div class="healData-box blood_pressure" v-if="showModule==1">
                 <h5>今日血压</h5>
@@ -24,7 +23,6 @@
                         <el-input v-model="ruleForm.tizhong"></el-input>
                     </el-form-item>
                     <el-form-item label="部位" prop="buwei_type" size="small" >
-
                         <el-select v-model="ruleForm.buwei_type" placeholder="请选择">
                             <el-option
                                     v-for="item in buwei_types"
@@ -76,9 +74,52 @@
                     </el-form-item>
                 </el-form>
             </div>
-<!--            <div class="healData-box blood_sugar" v-if="showModule==2">-->
-<!--                <h5>今日血糖</h5>-->
-<!--            </div>-->
+            <div class="healData-box blood_sugar" v-if="showModule==2">
+                <h5>今日血糖</h5>
+                <el-form :model="ruleForm2" :rules="rules2" ref="ruleForm2" label-width="100px">
+                    <el-form-item label="时间" prop="jieduan_type" size="small" >
+                        <el-select v-model="ruleForm2.jieduan_type" placeholder="请选择">
+                            <el-option
+                                    :label="早餐前"
+                                    :value="1">
+                            </el-option>
+                            <el-option
+                                    :label="早餐后"
+                                    :value="2">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="随机血糖" prop="xuetang" size="small">
+                        <el-input v-model="ruleForm2.xuetang" oninput = "value=value.replace(/[^\d.]/g,'')"></el-input>
+                    </el-form-item>
+                    <el-form-item label="糖化血红蛋白" prop="hongdanbai" size="small">
+                        <el-input v-model="ruleForm2.hongdanbai" oninput = "value=value.replace(/[^\d.]/g,'')"></el-input>
+                    </el-form-item>
+                    <div>
+                        <h5>今日用药</h5>
+                        <el-form :model="item" v-for="(item,index) in pills2" :key="index" >
+                            <el-form-item label="药品名称"  size="small"
+                                          prop="pills_name"
+                                          :rules="{required: true, message: '药品不能为空', trigger: 'blur'}"
+                            >
+                                <el-input v-model="item.pills_name"></el-input>
+                            </el-form-item>
+                            <el-form-item label="数量"  size="small"
+                                          prop="pills_num"
+                                          :rules="{required: true, message: '请输入正确的数量', trigger: 'blur'}"
+                            >
+                                <el-input v-model="item.pills_num"></el-input>
+                            </el-form-item>
+                            <i class="iconfont icon-del" @click="delPill(index,2)" v-if="pills2.length>1" style="margin: 0 4px;"></i>
+                            <i class="iconfont icon-add2" @click="addPill(2)" v-if="index==(pills2.length-1)" style="margin: 0 4px;"></i>
+                        </el-form>
+                    </div>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitForm2('ruleForm2')">立即创建</el-button>
+                        <el-button @click="resetForm('ruleForm2')">重置</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
 <!--            <div class="healData-box blood_lipids" v-if="showModule==3">-->
 <!--                <h5>今日血脂</h5>-->
 <!--            </div>-->
@@ -90,7 +131,7 @@
 
 </template>
 <script>
-    import { ADDDATA } from '@/api'
+    import { ADDDATA ,ADDDATA_XT } from '@/api'
     import { mapState } from 'vuex'
     export default {
         data() {
@@ -136,7 +177,18 @@
                     measure_at:[
                         {required: true, message: '请输入测量时间', trigger: 'blur'},
                     ]
-                }
+                },
+
+                ruleForm2:{
+                    jieduan_type:1,
+                    xuetang:'',
+                    hongdanbai:''
+                },
+                pills2:[
+                    {'pills_name':'','pills_num':0}
+                ],
+                rules2: {}
+
             }
         },
         computed: {
@@ -146,11 +198,20 @@
             ])
         },
         methods: {
-            delPill(index){
-                this.pills.splice(index,1)
+            delPill(index,model=1){
+                if(model==1){
+                    this.pills.splice(index,1)
+                }else if(model==2){
+                    this.pills2.splice(index,1)
+                }
+
             },
-            addPill(){
-                this.pills.push({'pills_name':'','pills_num':0});
+            addPill(model=1){
+                if(model==1) {
+                    this.pills.push({'pills_name': '', 'pills_num': 0});
+                }else if(model==2){
+                    this.pills2.push({'pills_name': '', 'pills_num': 0});
+                }
             },
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
@@ -202,8 +263,53 @@
                     }
                 });
             },
+            submitForm2(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.ruleForm2.user_id=this.UserId;
+                        let sub_obj={
+                            data:this.ruleForm2,
+                            pills:this.pills
+                        }
+                        ADDDATA_XT (sub_obj)
+                            .then(response => {
+                                this.$message({
+                                    message: "提交成功！",
+                                    type: "success",
+                                    offset:'100',
+                                    center: true
+                                });
+                                let t=setTimeout(()=>{
+                                    clearTimeout(t);
+                                    this.ruleForm2= {
+                                        jieduan_type:1,
+                                        xuetang:'',
+                                        hongdanbai:''
+                                    };
+                                    this.pills2=[
+                                        {'pills_name':'','pills_num':0}
+                                    ];
+                                },1000)
+                            })
+                            .catch(error => {
+                                console.log(error);
+                                this.$message({
+                                    message: "操作失败！",
+                                    type: "error",
+                                    offset:'100',
+                                    center: true
+                                });
+                            });
+                    } else {
+                        console.log('error submit!!');
+                        return false;
+                    }
+                });
+            },
             resetForm(formName) {
-                this.pills=[{'pills_name':'','pills_num':0}];
+                if(formName=='ruleForm'){
+                    this.pills=[{'pills_name':'','pills_num':0}];
+                }
                 this.$refs[formName].resetFields();
             },
             changeModule(type){
@@ -228,6 +334,21 @@
     }
 </script>
 <style lang="scss">
+    .tab-model{
+        li{
+            display: inline-block;
+            width: 140px;
+            height: 40px;
+            border: 1px solid #ccc;
+            text-align: center;
+            line-height: 40px;
+            cursor:pointer;
+        }
+        li.active-tab{
+            background: #409EFF;
+            color: #fff;
+        }
+    }
     .healData-add{
         .healData-model{
             >div{
