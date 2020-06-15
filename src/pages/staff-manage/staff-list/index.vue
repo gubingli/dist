@@ -167,7 +167,9 @@
                                 });
                                 let t=setTimeout(()=>{
                                     clearTimeout(t);
+                                    this.showFlag=false;
                                     this.resetForm('memForm');
+                                    this.currentPage =1;
                                     this.getData();
                                 },1000)
                             })

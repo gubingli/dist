@@ -36,7 +36,7 @@
                     {{scope.row.audit_status==0?'未通过':(scope.row.audit_status==1?'待审核':(scope.row.audit_status=='2'?'已审核':'未审核'))}}
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="360">
+            <el-table-column label="操作" width="380">
                 <template slot-scope="scope">
                     <!--0审核失败 1审核中 2审核通过-->
                     <el-button
