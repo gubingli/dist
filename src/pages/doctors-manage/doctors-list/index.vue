@@ -14,13 +14,24 @@
             </el-table-column>
             <el-table-column
                     prop="true_name"
-                    label="姓名"
-                    min-width="180">
+                    label="姓名">
+            </el-table-column>
+            <el-table-column
+                    prop="school"
+                    label="毕业院校">
+            </el-table-column>
+            <el-table-column
+                    prop="certificate_no"
+                    label="医生资格证号"
+                    min-width="120">
+            </el-table-column>
+            <el-table-column
+                    prop="start_time"
+                    label="工作时间">
             </el-table-column>
             <el-table-column
                     prop="status"
-                    label="审核状态"
-                    min-width="180">
+                    label="审核状态">
                 <template slot-scope="scope">
                     {{scope.row.audit_status==0?'未通过':(scope.row.audit_status==1?'待审核':(scope.row.audit_status=='2'?'已审核':'未审核'))}}
                 </template>
@@ -58,11 +69,15 @@
                             size="mini"
                             type="danger"
                             @click="handleImpower(0,scope.$index, scope.row)">永久查看</el-button>
+<!--                        v-if="scope.row.is_message==1"-->
                         <el-button
-                                v-if="scope.row.is_message==1"
                                 size="mini"
                                 type="primary"
-                                @click="handleMessage(scope.$index, scope.row)">查看留言</el-button>
+                                @click="handleMessage(scope.$index, scope.row)">
+                            <div v-if="scope.row.is_message" class="red-circle"></div>
+                            {{scope.row.is_message==1?'查看信息':'发送信息'}}
+
+                        </el-button>
                     </template>
 
                 </template>
@@ -103,13 +118,9 @@
         methods: {
             getData(){
                 let param={
-                    "role":2,"page":this.currentPage
+                    "role":2,"page":this.currentPage,"user_id":this.UserId,"read_role":this.Role
                 }
-                if(this.Role==3){
-                    param.huiyuan=1 ;
-                    param.user_id=this.UserId;
-                    param.read_role=2;
-                };
+
                 LIST(param)
                     .then(response => {
                         this.$message({
@@ -119,6 +130,7 @@
                             center: true
                         });
                         this.total=response.total;
+                        this.pageSize=response.per_page||0;
                         this.tableData=response.data;
                     })
                     .catch(error => {
@@ -150,7 +162,7 @@
             },
             subImpower(row,num){//user_id  d_user_id im_status  1 number 0
                 let param={
-                    data:{user_id:Number(this.UserId),d_user_id:row.id,im_status:1,number:num}
+                    data:{user_id:Number(this.UserId),d_user_id:row.user_id,im_status:1,number:num}
                 };
                 IMPOWER(param)
                     .then(response => {
@@ -175,7 +187,7 @@
                         });
                     });
             },
-            handleForbid(row) {
+            handleForbid(index,row) {
                 this.$confirm('确认禁止该医生查看你的数据？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
@@ -190,7 +202,10 @@
                 });
             },
             forbidImpower(row){
-                IMPOWER({ data:{user_id:row.user_id,d_user_id:row.id,im_status:0}})
+                console.log(row.user_id);
+                console.log(row.id);
+
+                IMPOWER({ data:{user_id:Number(this.UserId),d_user_id:row.user_id,im_status:0}})
                     .then(response => {
                         this.$message({
                             message: "操作成功！",
@@ -272,14 +287,14 @@
             },
 
             //查看留言
-            handleMessage(){
-                this.$router.push('message/'+row.id);
+            handleMessage(index,row){
+                this.$router.push('message/'+row.user_id);
             },
 
 
             //详情
             handleDetail(index, row) {
-                this.$router.push('detail/'+row.id);
+                this.$router.push('detail/'+row.user_id);
             },
             //分页
             handleCurrentChange(val) {
@@ -293,3 +308,13 @@
         }
     }
 </script>
+<style>
+    .red-circle{
+        width: 8px;
+        height: 8px;
+        background: red;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 4px;
+    }
+</style>

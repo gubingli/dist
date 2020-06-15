@@ -25,6 +25,9 @@ const Company= () => import('@/pages/company-manage')
 const CompanyList = () => import('@/pages/company-manage/company-list')
 const CompanyDetail = () => import('@/pages/company-manage/company-detail')
 
+const Staff = () => import('@/pages/staff-manage')
+const StaffList = () => import('@/pages/staff-manage/staff-list')
+
 /* 需要权限判断的路由 */
 export const   dynamicRouter = [
     {
@@ -106,6 +109,17 @@ export const   dynamicRouter = [
                     name: '健康曲线',
                     // icon: 'icon-product-manage',
                     slideName:'healthData-add',
+                    slideHide:true,
+                }
+            },
+            {
+                path: 'message/:id',
+                name: 'member-message',
+                component: DoctorsMessage,
+                meta: {
+                    name: '留言详情',
+                    // icon: 'icon-doctor',
+                    slideName:'member-list',
                     slideHide:true,
                 }
             }
@@ -244,8 +258,29 @@ export const   dynamicRouter = [
                 meta: {
                     name: '健康曲线',
                     // icon: 'icon-product-manage',
-                    slideName:'healthData-add',
+                    slideName:'healthData-echart',
                     // slideHide:true,
+                }
+            }
+
+        ]
+    },
+    {
+        path: 'staff',
+        component: Staff,
+        name: 'Staff',
+        meta: {
+            name: '职员管理',
+            icon: 'icon-data-manage'
+        },
+        children: [
+            {
+                path: 'list',
+                name: 'staff-list',
+                component: StaffList,
+                meta: {
+                    name: '职员列表',
+                    slideName:'staff-list',
                 }
             }
 

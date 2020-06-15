@@ -18,6 +18,15 @@
         <el-form-item label="职位" prop="position">
             <el-input v-model="ruleForm.position"></el-input>
         </el-form-item>
+        <el-form-item label="毕业院校" prop="school">
+            <el-input v-model="ruleForm.school"></el-input>
+        </el-form-item>
+        <el-form-item label="医生资格证号" prop="certificate_no">
+            <el-input v-model="ruleForm.certificate_nol"></el-input>
+        </el-form-item>
+        <el-form-item label="开始工作日期" prop="start_time">
+            <el-date-picker type="date"  placeholder="选择日期" v-model="ruleForm.start_time" value-format="yyyy-MM-dd"></el-date-picker>
+        </el-form-item>
         <el-form-item label="身份证号码" prop="card_no">
             <el-input v-model="ruleForm.card_no"></el-input>
         </el-form-item>
@@ -74,6 +83,9 @@
                     company_name: '',
                     department: '',
                     position:'',
+                    school:'',
+                    certificate_no:'',
+                    start_time:'',
                     nation:'',
                     card_no:'',
                     birthday_at:'',
@@ -121,6 +133,9 @@
                             "company_name": this.ruleForm.company_name,
                             'department': this.ruleForm.department,
                             'position':this.ruleForm.position,
+                            'school':this.ruleForm.school,
+                            'certificate_no':this.ruleForm.certificate_no,
+                            'start_time':this.ruleForm.start_time,
                             'nation':this.ruleForm.nation,
                             'card_no':this.ruleForm.card_no,
                             'birthday_at':this.ruleForm.birthday_at,

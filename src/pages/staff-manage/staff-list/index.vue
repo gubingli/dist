@@ -1,10 +1,10 @@
 <template>
     <div>
         <div class="add" @click="showAddModule" style="text-align: right;width: 100px;float: right;cursor: pointer;">
-            <span class="iconfont icon-add" style="font-size: 18px"> <i>添加会员</i></span>
+            <span class="iconfont icon-add" style="font-size: 18px"> <i>添加职员</i></span>
         </div>
         <div class="module-box" v-if="showFlag">
-            <p style="">添加会员</p>
+            <p style="">添加职员</p>
             <el-form :model="memForm" :rules="rules"  ref="memForm" label-width="70px"  class="demo-ruleForm" >
                 <el-form-item label="姓名" prop="true_name">
                     <el-input v-model="memForm.true_name"></el-input>
@@ -52,14 +52,9 @@
                             type="danger"
                             @click="handleEchart(scope.$index, scope.row)">健康曲线</el-button>
                     <el-button
-                            v-if="Role==2"
                             size="mini"
                             type="primary"
-                            @click="handleMessage(scope.$index, scope.row)">
-                        <div v-if="scope.row.is_message" class="red-circle"></div>
-                        发送信息
-
-                    </el-button>
+                            @click="handleMessage(scope.$index, scope.row)">发送信息</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -76,7 +71,7 @@
 
 <script>
     import { mapState } from 'vuex'
-    import { LIST ,ADD_MEMBER} from '@/api'
+    import { STAFF_LIST,ADD_STAFF} from '@/api'
     import { validatePhone} from '@/utils/validate'
     export default {
         data() {
@@ -123,7 +118,7 @@
         },
         methods: {
             getData(){
-                LIST({"role":3,"user_id":this.UserId,"page":this.currentPage,"read_role":this.Role})
+                STAFF_LIST({"user_id":this.UserId,"page":this.currentPage})
                     .then(response => {
                         this.$message({
                             message: "获取成功！",
@@ -131,7 +126,6 @@
                             offset:'100',
                             center: true
                         });
-                       console.log(response)
                         this.total=response.total||0;
                         this.pageSize=response.per_page||0;
                         this.tableData=response.data;
@@ -147,10 +141,7 @@
                     });
             },
 
-            handleEchart(index, row) {
-                console.log(index, row);
-                this.$router.push('/healthData/echart?user_id='+row.user_id);
-            },
+
             handleDetail(index, row) {
                 this.$router.push('detail/'+row.id);
             },
@@ -160,17 +151,13 @@
                 this.getData();
             },
 
-            //查看留言
-            handleMessage(index,row){
-                this.$router.push('message/'+row.user_id);
-            },
 
             //添加会员
             submitMemForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         this.memForm['user_id']=this.UserId;
-                        ADD_MEMBER(this.memForm)
+                        ADD_STAFF(this.memForm)
                             .then(response => {
                                 this.$message({
                                     message: "提交成功！",
@@ -219,14 +206,6 @@
     }
 </script>
 <style lang="scss">
-    .red-circle{
-        width: 8px;
-        height: 8px;
-        background: red;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 4px;
-    }
     .module-box{
         width:300px;
         position: absolute;

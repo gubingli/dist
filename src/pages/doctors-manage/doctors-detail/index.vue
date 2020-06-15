@@ -8,6 +8,9 @@
           <Description term="所在公司">{{detail.company_name}}</Description>
           <Description term="所在部门">{{detail.department}}</Description>
           <Description term="职位">{{detail.position}}</Description>
+          <Description term="医生资格证号">{{detail.certificate_no}}</Description>
+          <Description term="毕业院校">{{detail.school}}</Description>
+          <Description term="开始工作时间">{{detail.start_time}}</Description>
           <Description term="民族">{{detail.nation}}</Description>
           <Description term="身份证号码">{{detail.card_no}}</Description>
           <Description term="出生年月">{{detail.birthday_at}}</Description>

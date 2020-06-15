@@ -5,19 +5,17 @@
             <!--:key="item.created_at"-->
             <template v-for="item in mesList" >
                 <li class="time">{{item.created_at}}</li>
-                <li class="home-mes"  v-if="item.speaker==UserId">
+                <li class="home-mes"  v-if="item.true_name">
                     <div class="mes-name">
-                        <img v-if="item.d_avatar" :src='item.d_avatar' alt="">
-                        <img v-else src="@/assets/img/member_avatar.png" alt="">
+<!--                        <img src="@/assets/img/1-1.jpg" alt="">-->
                         <h5 >{{item.true_name}}</h5>
                     </div>
                     <p class="mes-detail">{{item.description}}</p>
                 </li>
-                <li class="other-mes"  v-if="item.speaker!=UserId">
+                <li class="other-mes"  v-if="item.d_true_name">
                     <p class="mes-detail">{{item.description}}</p>
                     <div class="mes-name">
-                        <img v-if="item.d_avatar" :src='item.d_avatar' alt="">
-                        <img v-else src="@/assets/img/member_avatar.png" alt="">
+<!--                        <img src="@/assets/img/1-1 (4).jpg" alt="">-->
                         <h5 >{{item.d_true_name}}</h5>
                     </div>
                 </li>
@@ -38,13 +36,42 @@
 <script>
     import { mapState } from 'vuex'
     import { MESSAGE,MESSAGEADD } from '@/api'
-    import { Format } from '@/utils/formdate.js'
     export default {
         data() {
             return {
                 id:'',
+                true_name:'',
                 mesList:[
-
+                    {
+                        d_true_name:'11',
+                        description:'1111111111111111111111111111111111111111',
+                        created_at:'2020-20-20 12:22:30',
+                    },
+                    {
+                        true_name:'22',
+                        description:'222222',
+                        created_at:'2020-20-20 12:22:30',
+                    },
+                    {
+                        d_true_name:'11',
+                        description:'11111',
+                        created_at:'2020-20-20 12:22:30',
+                    },
+                    {
+                        true_name:'22',
+                        description:'222222',
+                        created_at:'2020-20-20 12:22:30',
+                    },
+                    {
+                        d_true_name:'11',
+                        description:'11111',
+                        created_at:'2020-20-20 12:22:30',
+                    },
+                    {
+                        true_name:'22',
+                        description:'222222',
+                        created_at:'2020-20-20 12:22:30',
+                    }
                 ],
                 ruleForm: {
                     desc: ''
@@ -64,7 +91,15 @@
         },
         methods: {
             getData(){
-                MESSAGE({user_id:(this.Role==3?this.UserId:this.id),d_user_id:(this.Role==2?this.UserId:this.id)})
+                // let param={
+                //     "role":2,"page":this.currentPage
+                // }
+                // if(this.Role==3){
+                //     param.huiyuan=1 ;
+                //     param.user_id=this.UserId;
+                //     param.read_role=2;
+                // };
+                MESSAGE({user_id:this.UserId,d_user_id:this.id})
                     .then(response => {
                         this.mesList=response
 
@@ -81,10 +116,9 @@
             },
             handleMessage(){
                 let param={
-                    user_id:(this.Role==3?this.UserId:this.id),
-                    d_user_id:(this.Role==2?this.UserId:this.id),
-                    description:this.ruleForm.desc,
-                    speaker:this.UserId,
+                    user_id:this.UserId,
+                    d_user_id:this.id,
+                    description:this.ruleForm.desc
                 }
                 MESSAGEADD({data:param})
                     .then(response => {
@@ -99,10 +133,9 @@
                             console.log(this.mesList)
                             this.mesList.push(
                             {
-                                true_name:'',
+                                true_name:this.true_name,
                                 description:this.ruleForm.desc,
-                                created_at:Format(new Date(),'yyyy-MM-dd hh:mm:ss'),
-                                speaker:this.UserId
+                                created_at:'2020-20-20 12:22:30',
                             });
                             this.ruleForm.desc='';
                         },1000)

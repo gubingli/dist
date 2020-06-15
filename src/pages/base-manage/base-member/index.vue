@@ -63,7 +63,7 @@
             return {
                 ruleForm: {
                     true_name: '',
-                    gender:2,
+                    gender:'',
                     nation:'',
                     card_no:'',
                     birthday_at:'',

@@ -94,7 +94,8 @@
                             center: true
                         });
                         this.tableData=response.data;
-//                        this.total=response.data.length;
+                        this.total=response.total;
+                        this.pageSize=response.per_page||0;
                     })
                     .catch(error => {
                         console.log(2222)
