@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="add" @click="showAddModule" style="text-align: right;width: 100px;float: right;cursor: pointer;">
+        <div v-if="Role!=2" class="add" @click="showAddModule" style="text-align: right;width: 100px;float: right;cursor: pointer;">
             <span class="iconfont icon-add" style="font-size: 18px"> <i>添加会员</i></span>
         </div>
         <div class="module-box" v-if="showFlag">
@@ -14,6 +14,9 @@
                 </el-form-item>
                 <el-form-item label="密码" prop="password">
                     <el-input v-model="memForm.password"></el-input>
+                </el-form-item>
+                <el-form-item label="排序" prop="sort">
+                    <el-input v-model="memForm.sort" oninput = "value=value.replace(/[^\d.]/g,'')"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button  type="primary" @click="submitMemForm('memForm')">提交</el-button>
@@ -48,6 +51,7 @@
                             size="mini"
                             @click="handleDetail(scope.$index, scope.row)">详情</el-button>
                     <el-button
+                            v-if="Role==2||Role==1"
                             size="mini"
                             type="danger"
                             @click="handleEchart(scope.$index, scope.row)">健康曲线</el-button>
@@ -56,7 +60,7 @@
                             size="mini"
                             type="primary"
                             @click="handleMessage(scope.$index, scope.row)">
-                        <div v-if="scope.row.is_message" class="red-circle"></div>
+                        <div v-if="scope.row.is_read!=1" class="red-circle"></div>
                         发送信息
 
                     </el-button>
@@ -91,7 +95,8 @@
                     user_id:'',
                     true_name:'',
                     account:'',
-                    password:''
+                    password:'',
+                    sort:'',
                 },
                 rules: {
                     true_name: [
@@ -131,7 +136,6 @@
                             offset:'100',
                             center: true
                         });
-                       console.log(response)
                         this.total=response.total||0;
                         this.pageSize=response.per_page||0;
                         this.tableData=response.data;
@@ -181,7 +185,7 @@
                                 let t=setTimeout(()=>{
                                     clearTimeout(t);
                                     this.showFlag=false;
-                                    this.resetForm('memForm');
+                                    this.cancelForm('memForm');
                                     this.currentPage =1;
                                     this.getData();
                                 },1000)

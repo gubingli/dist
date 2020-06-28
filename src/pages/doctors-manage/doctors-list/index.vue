@@ -1,7 +1,10 @@
 <template>
     <div>
+        <el-button @click="clearFilter">清除所有过滤器</el-button>
         <el-table
+                ref="filterTable"
                 :data="tableData"
+                stripe
                 style="width: 100%">
             <el-table-column
                     prop="id"
@@ -21,6 +24,10 @@
                     label="毕业院校">
             </el-table-column>
             <el-table-column
+                    prop="company_name"
+                    label="所在医院">
+            </el-table-column>
+            <el-table-column
                     prop="certificate_no"
                     label="医生资格证号"
                     min-width="120">
@@ -36,7 +43,11 @@
                     {{scope.row.audit_status==0?'未通过':(scope.row.audit_status==1?'待审核':(scope.row.audit_status=='2'?'已审核':'未审核'))}}
                 </template>
             </el-table-column>
-            <el-table-column label="操作" width="380">
+            <el-table-column label="操作"
+                             width="380"
+                             :filters="Role==0?[{ text: '未审核', value: '1' }, { text: '已审核', value: '0,2' }]:[{ text: '授权', value: '1' }, { text: '未授权', value: '0' }]"
+                             :filter-method="filterTag"
+                             filter-placement="bottom-end">
                 <template slot-scope="scope">
                     <!--0审核失败 1审核中 2审核通过-->
                     <el-button
@@ -74,7 +85,7 @@
                                 size="mini"
                                 type="primary"
                                 @click="handleMessage(scope.$index, scope.row)">
-                            <div v-if="scope.row.is_message" class="red-circle"></div>
+                            <div v-if="scope.row.is_read!=1" class="red-circle"></div>
                             {{scope.row.is_message==1?'查看信息':'发送信息'}}
 
                         </el-button>
@@ -106,7 +117,9 @@
                 pageCount:7,
                 currentPage:1,
 
-                tableData: []
+                tableData: [],
+
+
             }
         },
         computed: {
@@ -301,6 +314,20 @@
                 this.currentPage = val;
                 this.getData();
             },
+
+
+            //筛选
+            filterTag(value, row) {
+                if(this.Role==0){
+                    let audit_arr=value.split(',');
+                    return audit_arr.indexOf(row.audit_status.toString())>-1?true:false
+                }else{
+                    return row.is_impower == value;
+                }
+            },
+            clearFilter() {
+                this.$refs.filterTable.clearFilter();
+            },
         },
         mounted(){
             console.log(this.Role);
@@ -308,7 +335,7 @@
         }
     }
 </script>
-<style>
+<style lang="scss">
     .red-circle{
         width: 8px;
         height: 8px;

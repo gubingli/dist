@@ -64,7 +64,7 @@
     </div>
 </template>
 <script>
-    import { ADDDATA  } from '@/api'
+    import { ADDDATA,ADDDATA_LAST  } from '@/api'
 
     export default {
         name: "BP_ADD",
@@ -120,6 +120,24 @@
             }
         },
         methods: {
+            lastData(){
+                ADDDATA_LAST({"type":1,"user_id":this.id}).then(response => {
+                    this.ruleForm.tizhong=response.tizhong||'';
+                    this.ruleForm.operator=response.operator||'';
+                    this.ruleForm.yiqi_model=response.yiqi_model||'';
+                    this.pills=response.medications.length!=0?response.medications:this.pills;
+
+                })
+                    .catch(error => {
+                        console.log(error);
+                        this.$message({
+                            message: "拉去上次数据失败！",
+                            type: "error",
+                            offset:'100',
+                            center: true
+                        });
+                    });
+            },
             delPill(index){
                 this.pills.splice(index,1)
             },
@@ -168,12 +186,15 @@
                 this.pills=[{'pills_name':'','pills_num':0}];
                 this.$refs[formName].resetFields();
             },
+        },
+        created(){
+            this.lastData();
         }
     }
 </script>
 <style lang="scss" >
      .healData-box{
-                box-shadow: 0 0 4px #ccc;
+                /*box-shadow: 0 0 4px #ccc;*/
                 padding: 20px 20px 10px;
                 margin: 20px 0;
                 overflow: hidden;

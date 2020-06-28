@@ -1,12 +1,12 @@
 <template>
     <div>
         <ul class="xuaya-tab xuaya_tab">
-            <li v-bind:class="{ active: module=='BP_SHOW'}" @click="changeModule('BP_SHOW')">血压折线图</li>
-            <li v-bind:class="{ active: module=='XT_SHOW'}" @click="changeModule('XT_SHOW')">血糖折线图</li>
-            <li v-bind:class="{ active: module=='XZ_SHOW'}" @click="changeModule('XZ_SHOW')">血脂折线图</li>
+            <li v-bind:class="{ active: module=='BP_SHOW'}" @click="changeModule('BP_SHOW')">血压</li>
+            <li v-bind:class="{ active: module=='XT_SHOW'}" @click="changeModule('XT_SHOW')">血糖</li>
+            <li v-bind:class="{ active: module=='XZ_SHOW'}" @click="changeModule('XZ_SHOW')">血脂</li>
         </ul>
         <keep-alive>
-            <div class="healData-model" :is="module" :id="user_id?user_id:UserId" :role="Role">
+            <div class="healData-model" :is="module" :id="user_id?user_id:UserId" :role="Role" :user_id="UserId">
 
             </div>
         </keep-alive>
@@ -45,8 +45,6 @@
             XZ_SHOW
         },
         created(){
-            console.log(this.$route.params.id)
-            console.log('u',this.$route.query.user_id)
             if(this.$route.query.user_id){
                 this.user_id=this.$route.query.user_id;
             }
@@ -60,7 +58,7 @@
     .xuaya-tab{
         li{
             display: inline-block;
-            padding: 0 10px;
+            padding: 0 28px;
             height: 40px;
             line-height: 40px;
             border: 1px solid #ccc;

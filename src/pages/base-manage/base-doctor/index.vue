@@ -9,10 +9,10 @@
         <el-form-item label="照片" prop="avatar">
             <my-upload @uploaded="uploadedAvatar" @setFileList="setFileListAvatar" listType="picture" :size="1024" :fileList="fileList_avatar"></my-upload>
         </el-form-item>
-        <el-form-item label="所在公司" prop="company_name">
+        <el-form-item label="所在医院" prop="company_name">
             <el-input v-model="ruleForm.company_name"></el-input>
         </el-form-item>
-        <el-form-item label="所在部门" prop="department">
+        <el-form-item label="所在科室" prop="department">
             <el-input v-model="ruleForm.department"></el-input>
         </el-form-item>
         <el-form-item label="职位" prop="position">

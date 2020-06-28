@@ -11,6 +11,12 @@ export default {
     set Role(value) {
         localStorage.setItem('role', value)
     },
+    get IdCode() {
+        return localStorage.getItem('id_code')
+    },
+    set IdCode(value) {
+        localStorage.setItem('id_code', value)
+    },
     get UserId() {
         return localStorage.getItem('user_id')
     },

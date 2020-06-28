@@ -55,7 +55,7 @@
 
 </template>
 <script>
-    import { ADDDATA_XZ } from '@/api'
+    import { ADDDATA_XZ,ADDDATA_LAST } from '@/api'
     export default {
         props: {
             id:'',
@@ -98,6 +98,23 @@
         },
 
         methods: {
+            lastData(){
+                ADDDATA_LAST({"type":3,"user_id":this.id}).then(response => {
+
+                    this.ruleForm.operator=response.operator||'';
+                    this.ruleForm.yiqi_model=response.yiqi_model||'';
+                    this.pills=response.medications.length!=0?response.medications:this.pills;
+                })
+                    .catch(error => {
+                        console.log(error);
+                        this.$message({
+                            message: "拉去上次数据失败！",
+                            type: "error",
+                            offset:'100',
+                            center: true
+                        });
+                    });
+            },
             delPill(index){
                     this.pills.splice(index,1)
 
@@ -147,6 +164,9 @@
                 this.pills=[{'pills_name':'','pills_num':''}];
                 this.$refs[formName].resetFields();
             },
+        },
+        created(){
+            this.lastData();
         }
     }
 </script>
@@ -169,7 +189,7 @@
     .healData-add{
         .healData-model{
             >div{
-                box-shadow: 0 0 4px #ccc;
+                /*box-shadow: 0 0 4px #ccc;*/
                 padding: 20px 20px 10px;
                 margin: 20px 0;
                 overflow: hidden;

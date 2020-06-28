@@ -21,9 +21,10 @@
             </transition-group>
         </el-breadcrumb>
         <div class="aside__top--right">
-            <div class="email">
-                <span class="iconfont icon-email"><i>40</i></span>
-            </div>
+            <div class="id_code">ID:{{IdCode}}</div>
+<!--            <div class="email">-->
+<!--                <span class="iconfont icon-email"><i>40</i></span>-->
+<!--            </div>-->
 <!--            <div class="user-msg">-->
 <!--                &lt;!&ndash;<img class="user-img" :src="require('@/assets/image/a.png')" alt="">&ndash;&gt;-->
 <!--                <span class="user-name">我的</span>-->
@@ -52,7 +53,7 @@ export default {
         return {}
     },
     computed: {
-        ...mapState(['isSidebarNavCollapse', 'crumbList'])
+        ...mapState(['isSidebarNavCollapse', 'crumbList','IdCode'])
     },
     methods: {
         toggleNavCollapse() {

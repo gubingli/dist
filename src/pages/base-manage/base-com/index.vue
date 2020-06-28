@@ -1,6 +1,6 @@
 <template>
     <!--机构名称、机构代码、法人姓名\营业执照复印件-->
-    <el-form :model="ruleForm" :rules="rules" :disabled="(this.ruleForm.audit_status==1?true:false)" ref="ruleForm" label-width="100px"  class="demo-ruleForm" style="width: 50%;min-width:300px;">
+    <el-form :model="ruleForm" :rules="rules" :disabled="(this.ruleForm.audit_status==1?true:false)" ref="ruleForm" label-width="100px"  class="demo-ruleForm" style="width: 70%;min-width:300px;">
         <el-form-item label="营业执照" prop="license_pic">
             <my-upload @uploaded="uploadedHandle" @setFileList="setFileList" listType="picture" :size="1024" :fileList="fileList"></my-upload>
 
@@ -17,8 +17,9 @@
         <el-form-item label="联系电话" prop="phone">
             <el-input v-model="ruleForm.phone"></el-input>
         </el-form-item>
-        <el-form-item label="机构地址" prop="address">
-            <el-input v-model="ruleForm.address"></el-input>
+        <el-form-item label="机构地址" prop="address"  style="width:100%;">
+            <v-distpicker @selected='selected'  :province="ruleForm.province" :city="ruleForm.city" :area="ruleForm.area" style="display:inline-block;"></v-distpicker>
+            <el-input v-model="ruleForm.address" style="display: inline-block;width: 40%;"></el-input>
         </el-form-item>
         <el-form-item label="机构简介" prop="description">
             <el-input type="textarea" v-model="ruleForm.description"></el-input>
@@ -38,14 +39,28 @@
     import { DETAIL,UPDATE,UPLOAD } from '@/api'
     import { mapState } from 'vuex'
     import  myUpload  from '@/components/upload'
+    import VDistpicker from 'v-distpicker';
     export default {
         data() {
+            console.log(this);
+            var validateAddress=(rule,value,callback)=>{
+                console.log(this.ruleForm.province,this.ruleForm.city,this.ruleForm.area);
+                if (value==''||this.ruleForm.province=="省"||this.ruleForm.city=="市"||this.ruleForm.area=="区") {
+                    callback(new Error('请输入地址'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 ruleForm: {
                     company_name: '',
                     license_number: '',
                     contact_name: '',
                     phone: '',
+                    //省市区
+                    province: '',
+                    city: '',
+                    area: '',
                     address: '',
                     description: '',
                     license_pic:'',
@@ -68,13 +83,14 @@
                         { required: true, message: '请输入手机号', trigger: 'blur' }
                     ],
                     address:[
-                        { required: true, message: '请输入手机号', trigger: 'blur' }
-                    ],
+                        { required: true,message: '请输入地址', trigger: 'blur' }
+                    ]
                 }
             };
         },
         components:{
-            myUpload
+            myUpload,
+            VDistpicker,
         },
         computed: {
             ...mapState([
@@ -100,6 +116,9 @@
                             'license_number':this.ruleForm.license_number,
                             'contact_name':this.ruleForm.contact_name,
                             'phone':this.ruleForm.phone,
+                            'province': this.ruleForm.province,
+                            'city': this.ruleForm.city,
+                            'area': this.ruleForm.area,
                             'address':this.ruleForm.address,
                             'description':this.ruleForm.description,
                             'license_pic':this.ruleForm.license_pic,
@@ -169,15 +188,16 @@
 
             //上传图片
             uploadedHandle (value){
-                console.log('license_pic:');
-                console.log(value);
                 this.ruleForm.license_pic=value;
             },
             setFileList(value){
-                console.log('fileList:')
-                console.log(value)
                 this.fileList=value;
-            }
+            },
+            selected(data){
+                this.ruleForm.province=data.province.value;
+                this.ruleForm.city=data.city.value;
+                this.ruleForm.area=data.area.value;
+            },
         },
         created(){
             console.log(this.$route.params.id)

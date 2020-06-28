@@ -12,9 +12,6 @@
                 <el-form-item label="手机号" prop="account">
                     <el-input v-model="memForm.account"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
-                    <el-input v-model="memForm.password"></el-input>
-                </el-form-item>
                 <el-form-item>
                     <el-button  type="primary" @click="submitMemForm('memForm')">提交</el-button>
                     <el-button  @click="cancelForm('memForm')">取消</el-button>
@@ -41,21 +38,6 @@
                     prop="created_at"
                     label="注册日期"
                     min-width="180">
-            </el-table-column>
-            <el-table-column label="操作" width="300">
-                <template slot-scope="scope">
-                    <el-button
-                            size="mini"
-                            @click="handleDetail(scope.$index, scope.row)">详情</el-button>
-                    <el-button
-                            size="mini"
-                            type="danger"
-                            @click="handleEchart(scope.$index, scope.row)">健康曲线</el-button>
-                    <el-button
-                            size="mini"
-                            type="primary"
-                            @click="handleMessage(scope.$index, scope.row)">发送信息</el-button>
-                </template>
             </el-table-column>
         </el-table>
         <el-pagination
@@ -86,7 +68,6 @@
                     user_id:'',
                     true_name:'',
                     account:'',
-                    password:''
                 },
                 rules: {
                     true_name: [
@@ -94,9 +75,6 @@
                     ],
                     account: [
                         {required: true, validator: validatePhone, trigger: 'blur'}
-                    ],
-                    password: [
-                        {required: true, message: '请输入密码', trigger: 'blur'}
                     ],
                 },
 

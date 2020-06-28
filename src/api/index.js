@@ -7,6 +7,10 @@ export const REGISTER = params => { return http.post(`admin/register`,  params )
 export const LOGIN = params => { return http.post(`admin/login`,  params ) };
 //审核、提交信息
 export const UPDATE = params => { return http.post(`admin/update`,   {"data":params }) };
+//普通会员提交基本健康数据
+export const UPDATA = params => { return http.post(`admin/updateData`,   {"data":params }) };
+//普通会员提交基本健康数据-拉取
+export const UPDATA_DETAIL = params => { return http.post(`admin/indexData?user_id=`+params,   {}) };
 //拉取详情
 export const DETAIL = params => { return http.post(`admin/detail?user_id=`+params,  {}) };
 //拉取列表 会员、医生、机构
@@ -17,6 +21,9 @@ export const ADD_MEMBER= params => { return http.post(`admin/company/member/add`
 export const CHECK = params => { return http.post(`admin/check`,  {"data":params} ) };
 //上传文件
 export const UPLOAD = params => { return http.post(`admin/upload`,  params ) };
+
+//添加健康数据-拉取之前的数据
+export const ADDDATA_LAST= params => { return http.get(`admin/lastData`,  {'params':params}) };
 //添加健康数据
 export const ADDDATA = params => { return http.post(`admin/xueya/addData`,  params) };
 export const ADDDATA_XT = params => { return http.post(`admin/xuetang/addData`,  params) };

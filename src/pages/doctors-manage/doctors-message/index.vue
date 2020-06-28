@@ -9,7 +9,7 @@
                     <div class="mes-name">
                         <img v-if="item.d_avatar" :src='item.d_avatar' alt="">
                         <img v-else src="@/assets/img/member_avatar.png" alt="">
-                        <h5 >{{item.true_name}}</h5>
+                        <h5 >{{Role==3?item.true_name:item.d_true_name}}</h5>
                     </div>
                     <p class="mes-detail">{{item.description}}</p>
                 </li>
@@ -18,7 +18,7 @@
                     <div class="mes-name">
                         <img v-if="item.d_avatar" :src='item.d_avatar' alt="">
                         <img v-else src="@/assets/img/member_avatar.png" alt="">
-                        <h5 >{{item.d_true_name}}</h5>
+                        <h5 >{{Role==3?item.d_true_name:item.true_name}}</h5>
                     </div>
                 </li>
             </template>
@@ -64,7 +64,7 @@
         },
         methods: {
             getData(){
-                MESSAGE({user_id:(this.Role==3?this.UserId:this.id),d_user_id:(this.Role==2?this.UserId:this.id)})
+                MESSAGE({user_id:(this.Role==3?this.UserId:this.id),d_user_id:(this.Role==2?this.UserId:this.id),role:this.Role})
                     .then(response => {
                         this.mesList=response
 

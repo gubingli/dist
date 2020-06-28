@@ -110,7 +110,7 @@ export default {
                                 offset:'100',
                                 center: true
                             });
-                            this.$store.commit('LOGIN_IN', {"token":response.access_token,"role":response.role,'id':response.user_id});
+                            this.$store.commit('LOGIN_IN', {"token":response.access_token,"role":response.role,'id':response.user_id,"id_code":response.id_code});
                             let t=setTimeout(function(){
                                 _that.$router.push('home')
                                 clearTimeout(t);
@@ -196,7 +196,7 @@ export default {
          margin-top: 20px;
          position: relative;
          .el-form{
-           width: 360px;
+           width: 380px;
            height: 100%;
            position: relative;
          }
@@ -206,6 +206,7 @@ export default {
 
          }
          .el-form-item{
+           width: 100%;
            margin-bottom: 8px;
          }
          .el-form-item:last-child{
